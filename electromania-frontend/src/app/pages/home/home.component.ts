@@ -31,11 +31,11 @@ const PRICE_FILTERS = {
 })
 export class HomeComponent implements OnInit {
     readonly router = inject(Router);
-    private productosService = inject(ProductosService);
-    private cartService = inject(CartService);
-    private toast = inject(ToastService);
-    private storageService = inject(StorageService);
-    private languageService = inject(LanguageService);
+    private readonly productosService = inject(ProductosService);
+    private readonly cartService = inject(CartService);
+    private readonly toast = inject(ToastService);
+    private readonly storageService = inject(StorageService);
+    private readonly languageService = inject(LanguageService);
     filtrosAvanzadosAbierto = false;
     busqueda = '';
     orden: SortOrder = 'relevancia';

@@ -18,10 +18,10 @@ import { LoginUserResponse } from '../../models/auth.model';
     styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  private router = inject(Router);
-  private authService = inject(AuthService);
-  private toast = inject(ToastService);
-  private languageService = inject(LanguageService);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
+  private readonly languageService = inject(LanguageService);
 
   mostrarFormLogin = false;
   email = '';
