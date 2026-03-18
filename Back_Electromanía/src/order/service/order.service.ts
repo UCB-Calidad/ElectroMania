@@ -25,7 +25,7 @@ export class OrderService {
     readonly authService: AuthService,
     readonly cartService: CartService,
     readonly orderMapper: OrderMapper,
-    @Inject(CACHE_MANAGER) private cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
   ) {}
   // ==================== Public Methods ====================
 
