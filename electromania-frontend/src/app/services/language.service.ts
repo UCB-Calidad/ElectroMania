@@ -27,8 +27,8 @@ export class LanguageService {
         this.syncCurrentLang();
     }
     private syncCurrentLang(): void {
-        const currentLang = this.translate.currentLang as Language || DEFAULT_LANG;
-        this._currentLang.set(currentLang);
+        const currentLang = this.translate.getCurrentLang();
+        this._currentLang.set(this.isValidLang(currentLang) ? currentLang : DEFAULT_LANG);
     }
     private isValidLang(lang: string | undefined): lang is Language {
         return lang === 'es' || lang === 'en';
