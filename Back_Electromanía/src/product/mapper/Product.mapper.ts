@@ -115,13 +115,6 @@ export class ProductMapper {
         return model;
     }
     toModelWithoutProductImages(entity: ProductWithoutImages): ProductModel {
-        const model = new ProductModel();
-        model.product_id = entity.product_id;
-        model.product_name = entity.product_name;
-        model.description = entity.description;
-        model.price = Number(entity.price);
-        model.stock = entity.stock_total-entity.stock_reserved;
-        model.state = entity.state;
-        return model;
+        return this.toModel(entity);
     }
 }
