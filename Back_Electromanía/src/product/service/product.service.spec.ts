@@ -24,17 +24,6 @@ describe('ProductService (unit)', () => {
     productCategories: [],
   };
 
-  const mockProductModel = {
-    product_id: 1,
-    product_name: 'prueba',
-    description: 'prueba',
-    price: 100,
-    stock: 10,
-    state: true,
-    images: [],
-    categories: [],
-  };
-
   beforeEach(async () => {
     // Mock completo de PrismaService
     prismaMock = {
@@ -120,7 +109,6 @@ describe('ProductService (unit)', () => {
   });
 
   it('should delete a product', async () => {
-    const result = await service.deleteProduct(1);
     expect(prismaMock.product.delete).toHaveBeenCalledWith({
       where: { product_id: 1 },
     });
@@ -156,8 +144,8 @@ describe('ProductService (unit)', () => {
     );
   });
 
-  it('should discount stock', async () => {
-    await service.discountStock(1, 5);
+  it('should confirm sale and discount stock', async () => {
+    await service.confirmSale(1, 5);
     expect(prismaMock.product.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { product_id: 1 },
@@ -166,13 +154,13 @@ describe('ProductService (unit)', () => {
     );
   });
 
-  it('should throw ForbiddenException if stock insufficient', async () => {
+  it('should throw ForbiddenException if reserved stock is insufficient', async () => {
     prismaMock.product.findUnique.mockResolvedValueOnce({ stock_reserved: 2 });
-    await expect(service.discountStock(1, 5)).rejects.toThrow(ForbiddenException);
+    await expect(service.confirmSale(1, 5)).rejects.toThrow(ForbiddenException);
   });
 
-  it('should throw NotFoundException if product not found for discountStock', async () => {
+  it('should throw NotFoundException if product not found for confirmSale', async () => {
     prismaMock.product.findUnique.mockResolvedValueOnce(null);
-    await expect(service.discountStock(1, 1)).rejects.toThrow(NotFoundException);
+    await expect(service.confirmSale(1, 1)).rejects.toThrow(NotFoundException);
   });
 });

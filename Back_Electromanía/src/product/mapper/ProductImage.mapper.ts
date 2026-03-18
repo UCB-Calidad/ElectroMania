@@ -1,7 +1,6 @@
-import { Mapper } from "src/common/interfaces/Mapper.interface";
 import { ProductModel } from "../model/Product.model";
 import { RegisterProductImageRequestModel } from "../model/RegisterProductImageRequest.model";
-import { Product, ProductImage, Prisma } from "@prisma/client";
+import { Product, Prisma } from "@prisma/client";
 
 type ProductImageWithProduct = Prisma.ProductImageGetPayload<{
   include: { product: { include: { productImages: true } } };

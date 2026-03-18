@@ -21,7 +21,7 @@ export class ProductService {
     private readonly productMapper: ProductMapper,
     private readonly productImageMapper: ProductImageMapper,
     private readonly pageProductMapper: PageProductMapper,
-    @Inject(CACHE_MANAGER) private cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
   ) {}
 
   async createProduct(dto: CreateProductRequestModel, tx?: Prisma.TransactionClient): Promise<ProductModel> {
@@ -331,10 +331,7 @@ export class ProductService {
   }
 
   async recoverReservedQuantity(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
-    this.validateQuantity(quantity);
-    const product = await this.incrementTotalStock(productId, quantity, tx);
-    this.deleteAllProductCache();
-    return product;
+    return await this.addStock(productId, quantity, tx);
   }
 
   /**
