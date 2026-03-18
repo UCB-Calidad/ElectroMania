@@ -524,7 +524,7 @@ export interface ProductFormData {
   `]
 })
 export class ProductFormModalComponent implements OnChanges, OnInit, OnDestroy {
-    private productosService = inject(ProductosService);
+    private readonly productosService = inject(ProductosService);
     @Input()
     isVisible = false;
     @Input()
@@ -584,7 +584,8 @@ export class ProductFormModalComponent implements OnChanges, OnInit, OnDestroy {
         }
     }
     private handleFile(file: File) {
-        if (!file.type.match(/^image\/(png|jpeg|webp)$/)) {
+      const imageTypePattern = /^image\/(png|jpeg|webp)$/;
+      if (!imageTypePattern.exec(file.type)) {
             console.error('Invalid file type');
             return;
         }
@@ -634,7 +635,7 @@ export class ProductFormModalComponent implements OnChanges, OnInit, OnDestroy {
             this.showCustomInput = this.selectedCategory === '__custom__';
             this.imagePreview = null;
             if (this.formData.existingImages && this.formData.existingImages.length > 0) {
-                this.selectedExistingImage = this.formData.existingImages[this.formData.existingImages.length - 1];
+              this.selectedExistingImage = this.formData.existingImages.at(-1) ?? null;
             }
             else {
                 this.selectedExistingImage = null;

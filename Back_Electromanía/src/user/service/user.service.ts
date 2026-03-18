@@ -5,7 +5,6 @@ import { UserCreateRequestModel } from '../models/UserCreateRequest.model';
 import { UserMapper } from '../mapper/User.mapper';
 import { UserModel } from '../models/User.model';
 import { Prisma, User } from '@prisma/client';
-import { UserRole } from '../enums/UserRole.enum';
 import { AuthService } from '../../auth/service/auth.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -19,7 +18,7 @@ export class UserService {
     private readonly passwordService: PasswordService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-    @Inject(CACHE_MANAGER) private cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
   ) {}
   async findAll():Promise<User[]>{
     const cachedUserKey = 'allUsers';

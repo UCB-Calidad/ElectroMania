@@ -5,7 +5,6 @@ import {User, Cart,Prisma} from "@prisma/client"
 import { UserRole } from '../enums/UserRole.enum';
 import { UserRegisterResponseModel } from "../models/UserRegisterResponse.model";
 import { UserJwtPayloadModel } from "src/auth/models/user-jwt-payload.model";
-import { Email } from "src/auth/models/value objects/email";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

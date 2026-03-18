@@ -1,9 +1,6 @@
-import { Body, Controller, Get, Headers, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { UserCreateRequestModel } from '../models/UserCreateRequest.model';
 import { UserModel } from '../models/User.model';
-import { Request } from 'express';
-import { access } from 'fs';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { UserJwtPayloadModel } from '../../auth/models/user-jwt-payload.model';
 import { AuthGuard } from '../../auth/guards/auth.guard';

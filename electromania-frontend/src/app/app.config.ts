@@ -12,7 +12,6 @@ function initializeTranslations(): Promise<void> {
     const translate = inject(TranslateService);
     const platformId = inject(PLATFORM_ID);
     translate.addLangs(['es', 'en']);
-    translate.setDefaultLang('es');
     translate.setTranslation('es', TRANSLATIONS.es);
     translate.setTranslation('en', TRANSLATIONS.en);
     let savedLang = 'es';
