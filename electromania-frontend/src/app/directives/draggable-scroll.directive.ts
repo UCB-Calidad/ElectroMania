@@ -4,20 +4,20 @@ import { Directive, ElementRef, OnInit, OnDestroy, Input, inject } from '@angula
     standalone: true,
 })
 export class DraggableScrollDirective implements OnInit, OnDestroy {
-    private el = inject(ElementRef<HTMLElement>);
+    private readonly el = inject(ElementRef<HTMLElement>);
     @Input()
     scrollSpeed = 2;
     private element!: HTMLElement;
     private isDown = false;
     private startX = 0;
     private scrollLeft = 0;
-    private boundMouseDown = this.onMouseDown.bind(this);
-    private boundMouseLeave = this.onMouseLeave.bind(this);
-    private boundMouseUp = this.onMouseUp.bind(this);
-    private boundMouseMove = this.onMouseMove.bind(this);
-    private boundTouchStart = this.onTouchStart.bind(this);
-    private boundTouchEnd = this.onTouchEnd.bind(this);
-    private boundTouchMove = this.onTouchMove.bind(this);
+    private readonly  boundMouseDown = this.onMouseDown.bind(this);
+    private readonly boundMouseLeave = this.onMouseLeave.bind(this);
+    private readonly boundMouseUp = this.onMouseUp.bind(this);
+    private readonly boundMouseMove = this.onMouseMove.bind(this);
+    private readonly boundTouchStart = this.onTouchStart.bind(this);
+    private readonly boundTouchEnd = this.onTouchEnd.bind(this);
+    private readonly boundTouchMove = this.onTouchMove.bind(this);
     ngOnInit() {
         this.element = this.el.nativeElement;
         this.element.style.cursor = 'grab';
