@@ -23,7 +23,7 @@ export interface ProductFormData {
     @if (isVisible) {
       <div class="pfm-overlay" (click)="onHandleCancel()" (keyup.escape)="onHandleCancel()" tabindex="0" role="button" [attr.aria-label]="'COMMON.CLOSE' | translate">
         <div class="pfm-content" (click)="$event.stopPropagation()" (keyup)="null" role="dialog" aria-modal="true" tabindex="-1">
-          
+
           <div class="pfm-header">
             <h3>{{ (product ? 'PRODUCT_MODAL.EDIT_PRODUCT' : 'PRODUCT_MODAL.NEW_PRODUCT') | translate }}</h3>
             <button type="button" class="pfm-close-btn" (click)="onHandleCancel()">
@@ -33,7 +33,7 @@ export interface ProductFormData {
 
           <form (ngSubmit)="onSubmit()" #productForm="ngForm">
             <div class="pfm-body">
-              
+
               <div class="pfm-form-group">
                 <label for="pfm-nombre">{{ 'PRODUCT_MODAL.NAME' | translate }}</label>
                 <input type="text" id="pfm-nombre" name="nombre" [(ngModel)]="formData.nombre" required [placeholder]="'PRODUCT_MODAL.NAME_PLACEHOLDER' | translate">
@@ -60,11 +60,11 @@ export interface ProductFormData {
                   <option value="__custom__">{{ 'PRODUCT_MODAL.ADD_NEW_CATEGORY' | translate }}</option>
                 </select>
                 @if (showCustomInput) {
-                  <input 
-                    type="text" 
-                    id="pfm-custom-categoria" 
-                    name="customCategoria" 
-                    [(ngModel)]="formData.categoria" 
+                  <input
+                    type="text"
+                    id="pfm-custom-categoria"
+                    name="customCategoria"
+                    [(ngModel)]="formData.categoria"
                     [placeholder]="'PRODUCT_MODAL.NEW_CATEGORY_PLACEHOLDER' | translate"
                     class="pfm-custom-category-input"
                   >
@@ -76,19 +76,19 @@ export interface ProductFormData {
                 <textarea id="pfm-descripcion" name="descripcion" [(ngModel)]="formData.descripcion" rows="3" [placeholder]="'PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
               </div>
 
-              
+
               <div class="pfm-form-group">
                 <span id="pfm-imagen-label" class="pfm-section-label">{{ 'PRODUCT_MODAL.IMAGE' | translate }}</span>
-                
-              
+
+
                 @if (hasExistingImages()) {
                   <div class="pfm-existing-images-section">
                     <p class="pfm-existing-label">{{ 'PRODUCT_MODAL.EXISTING_IMAGES' | translate }}</p>
                     <div class="pfm-existing-images-grid">
                       @for (img of formData.existingImages; track img; let i = $index) {
-                        <button 
-                          type="button" 
-                          class="pfm-existing-image-btn" 
+                        <button
+                          type="button"
+                          class="pfm-existing-image-btn"
                           [class.selected]="selectedExistingImage === img"
                           (click)="selectExistingImage(img)"
                         >
@@ -101,9 +101,9 @@ export interface ProductFormData {
                     </div>
                   </div>
                 }
-                
-                
-                <div 
+
+
+                <div
                   class="pfm-dropzone"
                   [class.dragover]="isDragOver"
                   [class.has-file]="formData.imagen || imagePreview"
@@ -135,23 +135,23 @@ export interface ProductFormData {
                     </div>
                   }
                 </div>
-                
-                <input 
-                  type="file" 
+
+                <input
+                  type="file"
                   #fileInput
                   accept="image/png,image/jpeg,image/webp"
                   (change)="onFileSelected($event)"
                   hidden
                 >
 
-                
+
                 <div class="pfm-url-input-section">
                   <span class="pfm-divider-text">{{ 'PRODUCT_MODAL.OR_ENTER_URL' | translate }}</span>
-                  <input 
-                    type="url" 
-                    id="pfm-imagenUrl" 
-                    name="imagenUrl" 
-                    [(ngModel)]="formData.imagenUrl" 
+                  <input
+                    type="url"
+                    id="pfm-imagenUrl"
+                    name="imagenUrl"
+                    [(ngModel)]="formData.imagenUrl"
                     [placeholder]="'PRODUCT_MODAL.URL_PLACEHOLDER' | translate"
                     [disabled]="!!formData.imagen"
                   >
@@ -229,7 +229,7 @@ export interface ProductFormData {
     }
     .pfm-close-btn svg { width: var(--space-5); height: var(--space-5); }
 
-    
+
     .pfm-content form {
       display: flex;
       flex-direction: column;
@@ -309,7 +309,7 @@ export interface ProductFormData {
       margin-top: 0.5rem;
     }
 
-    
+
     .pfm-existing-images-section {
       margin-bottom: 0.75rem;
     }
@@ -370,7 +370,7 @@ export interface ProductFormData {
       font-weight: bold;
     }
 
-    
+
     .pfm-dropzone {
       border: 2px dashed var(--border-color);
       border-radius: 0.75rem;
@@ -507,7 +507,7 @@ export interface ProductFormData {
       cursor: not-allowed;
     }
 
-    
+
     .pfm-form-group input[type="number"] {
       -moz-appearance: textfield;
       appearance: textfield;
@@ -524,7 +524,7 @@ export interface ProductFormData {
   `]
 })
 export class ProductFormModalComponent implements OnChanges, OnInit, OnDestroy {
-    private productosService = inject(ProductosService);
+    private readonly productosService = inject(ProductosService);
     @Input()
     isVisible = false;
     @Input()
