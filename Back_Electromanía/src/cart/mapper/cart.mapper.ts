@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { CartResponseModel } from '../models/cart.model';
 import { CartDetailsMapper } from './cartDetails.mapper';
-import { CreateCartRequestDto } from '../dto/createCartRequest.dto';
 
 type CartEntity = Prisma.CartGetPayload<{
   include: {

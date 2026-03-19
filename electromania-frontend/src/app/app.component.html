@@ -194,7 +194,7 @@
     </div>
   </div>
 </footer>
-<div class="mobile-menu-overlay" [class.open]="mobileMenuOpen()" (click)="toggleMobileMenu()"></div>
+<div class="mobile-menu-overlay" [class.open]="mobileMenuOpen()" (click)="toggleMobileMenu()" (keydown.enter)="toggleMobileMenu()"></div>
 <button class="hamburger-btn" (click)="toggleMobileMenu()" [class.active]="mobileMenuOpen()"
   [class.hidden]="isScrolled() && !mobileMenuOpen()" [attr.aria-label]="'NAV.MENU' | translate">
   <span></span>

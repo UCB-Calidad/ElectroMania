@@ -423,9 +423,9 @@
     "VISION_TITLE": "Nuestra Vision",
     "VISION_PARAGRAPH_1": "Ser el referente lider en Bolivia. Un punto de encuentro donde la innovacion, la calidad y la confianza impulsen una nueva generacion de talentos.",
     "VISION_PARAGRAPH_2": "Visualizamos un pais donde el acceso a tecnologia de calidad no sea una barrera, sino un impulso para construir un futuro mas innovador.",
-    "TEAM_IMAGE_ALT": "Equipo de ElectroMania",
-    "MISSION_IMAGE_ALT": "Misión",
-    "VISION_IMAGE_ALT": "Visión"
+    "TEAM_ALT": "Equipo de ElectroMania",
+    "MISSION_ALT": "Misión",
+    "VISION_ALT": "Visión"
   },
   "PRODUCT_DETAIL": {
     "STOCK_OUT": "Agotado temporalmente",

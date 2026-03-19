@@ -17,7 +17,7 @@ export class LoginUseCase {
     async execute(loginUserRequest:UserLoginRequestModel):Promise<LoginResponseModel> {
         const user = await this.userService.getUserByField('email', loginUserRequest.email);
         if(!user) throw new UnauthorizedException("Invalid Credentials");
-        const isValidPassword = this.passwordService.comparePassword(loginUserRequest.password, user.password);
+        const isValidPassword = await this.passwordService.comparePassword(loginUserRequest.password, user.password);
         if(!isValidPassword) throw new UnauthorizedException("Password Invalido");
         const payload = this.userMapper.toJwtPayloadModel(user);
         const token = await this.authService.generateToken(payload);

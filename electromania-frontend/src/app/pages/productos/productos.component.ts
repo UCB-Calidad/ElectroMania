@@ -20,14 +20,14 @@ import { CONTACT, ROUTES } from '../../constants';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductosComponent implements OnInit {
-    private router = inject(Router);
-    private toast = inject(ToastService);
-    private authService = inject(AuthService);
-    private orderService = inject(OrderService);
-    private languageService = inject(LanguageService);
-    private productosService = inject(ProductosService);
-    protected cartService = inject(CartService);
-    private userService = inject(UserService);
+    private readonly router = inject(Router);
+    private readonly toast = inject(ToastService);
+    private readonly authService = inject(AuthService);
+    private readonly orderService = inject(OrderService);
+    private readonly languageService = inject(LanguageService);
+    private readonly productosService = inject(ProductosService);
+    protected readonly cartService = inject(CartService);
+    private readonly userService = inject(UserService);
     readonly isAuthenticated = this.authService.isAuthenticated$;
     readonly currentUser = this.authService.currentUser;
     readonly carrito = this.cartService.items;
@@ -39,8 +39,11 @@ export class ProductosComponent implements OnInit {
     procesando = signal(false);
     mostrarModalExito = signal(false);
     numeroFactura = signal('');
-    private productStocks = signal<Map<number, number>>(new Map());
-    async ngOnInit() {
+    private readonly productStocks = signal<Map<number, number>>(new Map());
+    ngOnInit(): void {
+        void this.initializePageData();
+    }
+    private async initializePageData(): Promise<void> {
         await this.autoFillUserData();
         await this.loadProductStocks();
     }

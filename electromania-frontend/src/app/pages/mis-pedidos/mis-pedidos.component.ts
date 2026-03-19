@@ -17,10 +17,10 @@ import DOMPurify from 'dompurify';
     styleUrl: './mis-pedidos.component.css'
 })
 export class MisPedidosComponent implements OnInit, OnDestroy {
-    private orderService = inject(OrderService);
-    private translate = inject(TranslateService);
-    private modalService = inject(ModalService);
-    private toast = inject(ToastService);
+    private readonly orderService = inject(OrderService);
+    private readonly translate = inject(TranslateService);
+    private readonly modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
     private mobileHandoffInProgress = false;
     private readonly receiptFrame = viewChild<ElementRef<HTMLIFrameElement>>('receiptFrame');
     orders = signal<Order[]>([]);
@@ -53,7 +53,7 @@ export class MisPedidosComponent implements OnInit, OnDestroy {
         if (currentOrderId == null) {
             return;
         }
-        const isMobileView = window.matchMedia('(max-width: 900px)').matches;
+        const isMobileView = globalThis.matchMedia('(max-width: 900px)').matches;
         if (!isMobileView) {
             return;
         }
@@ -103,7 +103,7 @@ export class MisPedidosComponent implements OnInit, OnDestroy {
         return `${this.translate.instant('CART.BS')} ${amount.toFixed(2)}`;
     }
     async viewReceipt(orderId: number): Promise<void> {
-        const isMobileView = window.matchMedia('(max-width: 900px)').matches;
+        const isMobileView = globalThis.matchMedia('(max-width: 900px)').matches;
         if (isMobileView) {
             this.openReceiptInNewTab(orderId);
             return;

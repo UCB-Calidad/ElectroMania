@@ -423,9 +423,9 @@
     "VISION_TITLE": "Our Vision",
     "VISION_PARAGRAPH_1": "Be the leading reference in Bolivia. A meeting point where innovation, quality, and trust drive a new generation of talent.",
     "VISION_PARAGRAPH_2": "We envision a country where access to quality technology is not a barrier, but a boost to build a more innovative future.",
-    "TEAM_IMAGE_ALT": "ElectroMania team",
-    "MISSION_IMAGE_ALT": "Mission",
-    "VISION_IMAGE_ALT": "Vision"
+    "TEAM_ALT": "ElectroMania team",
+    "MISSION_ALT": "Mission",
+    "VISION_ALT": "Vision"
   },
   "PRODUCT_DETAIL": {
     "STOCK_OUT": "Temporarily out of stock",

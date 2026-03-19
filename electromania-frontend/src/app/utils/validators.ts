@@ -12,6 +12,6 @@ export function passwordsMatch(password: string, confirmPassword: string): boole
     return password === confirmPassword;
 }
 export function formatNIT(value: string): string {
-    const digitsOnly = value.replace(/\D/g, '');
+    const digitsOnly = value.replaceAll(/\D/g, '');
     return digitsOnly.substring(0, 15);
 }

@@ -1,4 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
 import { ValueObject } from '../../../common/interfaces/ValueObject';
 
 export class Email extends ValueObject<string> {
@@ -9,7 +8,7 @@ export class Email extends ValueObject<string> {
     }
     private isValidEmail(email: string) {
         if(!email.includes("@")){
-            throw Error("Invalid Email: Email most be have @")
+            throw new Error("Invalid Email: Email most be have @")
         }
     }
 }

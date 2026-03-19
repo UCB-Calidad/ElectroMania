@@ -9,7 +9,7 @@ export function exportToCsv<T extends object>(data: T[], filename: string, heade
         const value = item[h.key];
         const stringValue = value === null || value === undefined ? '' : String(value);
         return stringValue.includes(',') || stringValue.includes('"')
-            ? `"${stringValue.replace(/"/g, '""')}"`
+            ? `"${stringValue.replaceAll('"', '""')}"`
             : stringValue;
     }).join(','));
     const csvContent = [headerRow, ...rows].join('\n');
@@ -22,33 +22,37 @@ export function exportToCsv<T extends object>(data: T[], filename: string, heade
     URL.revokeObjectURL(url);
 }
 
-declare global {
-    interface Window {
-        ExcelJS?: {
-            Workbook: new () => {
-                addWorksheet: (name: string) => {
-                    addRow: (values: (string | number)[]) => void;
-                    getColumn: (index: number) => { width: number; };
-                    mergeCells: (startRow: number, startColumn: number, endRow: number, endColumn: number) => void;
-                    autoFilter?: {
-                        from: { row: number; column: number; };
-                        to: { row: number; column: number; };
-                    };
-                };
-                xlsx: {
-                    writeBuffer: () => Promise<ArrayBuffer>;
-                };
+type ExcelJsNamespace = {
+    Workbook: new () => {
+        addWorksheet: (name: string) => {
+            addRow: (values: (string | number)[]) => void;
+            getColumn: (index: number) => { width: number; };
+            mergeCells: (startRow: number, startColumn: number, endRow: number, endColumn: number) => void;
+            autoFilter?: {
+                from: { row: number; column: number; };
+                to: { row: number; column: number; };
             };
         };
+        xlsx: {
+            writeBuffer: () => Promise<ArrayBuffer>;
+        };
+    };
+};
+
+declare global {
+    interface Window {
+        ExcelJS?: ExcelJsNamespace;
     }
 }
 
+const excelJsGlobal = globalThis as typeof globalThis & { ExcelJS?: ExcelJsNamespace };
+
 async function ensureExcelJsLoaded(): Promise<void> {
-    if (window.ExcelJS) {
+    if (excelJsGlobal.ExcelJS) {
         return;
     }
     await new Promise<void>((resolve, reject) => {
-        const existingScript = document.querySelector('script[data-exceljs="true"]') as HTMLScriptElement | null;
+        const existingScript = document.querySelector('script[data-exceljs="true"]');
         if (existingScript) {
             existingScript.addEventListener('load', () => resolve(), { once: true });
             existingScript.addEventListener('error', () => reject(new Error('Failed to load ExcelJS script')), { once: true });
@@ -75,10 +79,10 @@ export async function exportToXlsx<T extends object>(
         return;
     }
     await ensureExcelJsLoaded();
-    if (!window.ExcelJS) {
+    if (!excelJsGlobal.ExcelJS) {
         throw new Error('ExcelJS is not available');
     }
-    const ExcelJS = window.ExcelJS;
+    const ExcelJS = excelJsGlobal.ExcelJS;
     const sheetName = options?.sheetName || 'Export';
     const title = options?.title || filename;
     const exportDateLabel = options?.exportDateLabel || 'Export date';
