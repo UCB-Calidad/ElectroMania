@@ -29,12 +29,12 @@ interface InventoryExportRow {
     styleUrl: './productos-admin.component.css'
 })
 export class ProductosAdminComponent implements OnInit {
-    private router = inject(Router);
-    private productosService = inject(ProductosService);
-    private authService = inject(AuthService);
-    private toast = inject(ToastService);
-    private modalService = inject(ModalService);
-    private languageService = inject(LanguageService);
+    private readonly router = inject(Router);
+    private readonly productosService = inject(ProductosService);
+    private readonly authService = inject(AuthService);
+    private readonly toast = inject(ToastService);
+    private readonly modalService = inject(ModalService);
+    private readonly languageService = inject(LanguageService);
     paginaActual = 1;
     productosPorPagina = INVENTORY.ITEMS_PER_PAGE;
     isModalOpen = signal(false);
@@ -141,7 +141,7 @@ export class ProductosAdminComponent implements OnInit {
                 });
                 if (data.selectedImageUrl && !data.imagen) {
                     const existingImages = data.existingImages || [];
-                    const lastImage = existingImages[existingImages.length - 1];
+                    const lastImage = existingImages.at(-1);
                     if (data.selectedImageUrl !== lastImage) {
                         await this.productosService.addProductImage({
                             name: data.nombre,

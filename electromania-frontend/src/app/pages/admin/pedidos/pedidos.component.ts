@@ -19,12 +19,12 @@ import { Subscription } from 'rxjs';
     styleUrl: './pedidos.component.css'
 })
 export class PedidosComponent implements OnInit, OnDestroy {
-    private orderService = inject(OrderService);
-    private orderWebsocketService = inject(OrderWebsocketService);
-    private toast = inject(ToastService);
-    private languageService = inject(LanguageService);
-    private modalService = inject(ModalService);
-    private subscriptions: Subscription[] = [];
+    private readonly orderService = inject(OrderService);
+    private readonly orderWebsocketService = inject(OrderWebsocketService);
+    private readonly toast = inject(ToastService);
+    private readonly languageService = inject(LanguageService);
+    private readonly modalService = inject(ModalService);
+    private readonly subscriptions: Subscription[] = [];
     orders = signal<Order[]>([]);
     filteredOrders = signal<Order[]>([]);
     loading = signal(true);

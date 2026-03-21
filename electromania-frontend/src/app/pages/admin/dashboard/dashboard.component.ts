@@ -29,10 +29,10 @@ interface DashboardStats {
     styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-    private platformId = inject(PLATFORM_ID);
-    private router = inject(Router);
-    private productosService = inject(ProductosService);
-    private languageService = inject(LanguageService);
+    private readonly platformId = inject(PLATFORM_ID);
+    private readonly router = inject(Router);
+    private readonly productosService = inject(ProductosService);
+    private readonly languageService = inject(LanguageService);
     private themeObserver?: MutationObserver;
     appVersion = APP_VERSION;
     @ViewChildren(BaseChartDirective)
@@ -207,7 +207,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.updateAllCharts();
     }
     refreshPage() {
-        window.location.reload();
+        globalThis.location.reload();
     }
     get hasRevenueData(): boolean {
         const values = this.lineChartData.datasets[0]?.data as number[] | undefined;

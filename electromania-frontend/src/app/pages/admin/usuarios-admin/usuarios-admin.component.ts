@@ -18,11 +18,11 @@ import { AdminSidebarComponent } from '../../../components/admin-sidebar/admin-s
     styleUrl: './usuarios-admin.component.css'
 })
 export class UsuariosAdminComponent implements OnInit {
-    private router = inject(Router);
-    private authService = inject(AuthService);
-    private toast = inject(ToastService);
-    private userService = inject(UserService);
-    private languageService = inject(LanguageService);
+    private readonly router = inject(Router);
+    private readonly authService = inject(AuthService);
+    private readonly toast = inject(ToastService);
+    private readonly userService = inject(UserService);
+    private readonly languageService = inject(LanguageService);
     busqueda = '';
     filtroRol = 'all';
     loading = signal(false);
