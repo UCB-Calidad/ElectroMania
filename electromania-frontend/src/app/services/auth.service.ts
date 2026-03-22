@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
-import { LoginRequest, LoginResponse, DecodedToken, RegisterUserRequest, UserInfo, LoginUserResponse } from '../models';
+import { LoginRequest, RegisterUserRequest, UserInfo, LoginUserResponse } from '../models';
 import { API, ROLES, isAdminRole, STORAGE_KEYS } from '../constants';
 import { StorageService } from './storage.service';
 @Injectable({
@@ -70,20 +69,6 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.getUser();
   }
-
-  // isTokenExpired(): boolean {
-  //   const token = this.getToken();
-  //   if (!token) return true;
-
-  //   try {
-  //     const decoded = jwtDecode<DecodedToken>(token);
-  //     if (!decoded.exp) return false;
-  //     const expirationDate = decoded.exp * 1000;
-  //     return Date.now() >= expirationDate;
-  //   } catch {
-  //     return true;
-  //   }
-  // }
 
   getUserInfo(): UserInfo | null {
     const user = JSON.parse(this.getUser() || '{}') as LoginUserResponse | null;

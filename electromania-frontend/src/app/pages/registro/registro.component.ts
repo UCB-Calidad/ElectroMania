@@ -16,10 +16,10 @@ import { isValidEmail, isValidNIT, isValidPassword, passwordsMatch, formatNIT } 
     styleUrls: ['./registro.component.css']
 })
 export class RegistroComponent {
-    private router = inject(Router);
-    private authService = inject(AuthService);
-    private toast = inject(ToastService);
-    private languageService = inject(LanguageService);
+    private readonly router = inject(Router);
+    private readonly authService = inject(AuthService);
+    private readonly toast = inject(ToastService);
+    private readonly languageService = inject(LanguageService);
     nit = '';
     razonSocial = '';
     email = '';

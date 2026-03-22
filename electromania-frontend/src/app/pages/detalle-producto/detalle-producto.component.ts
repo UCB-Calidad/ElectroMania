@@ -32,12 +32,12 @@ interface ProductDetail {
     styleUrl: './detalle-producto.component.css'
 })
 export class DetalleProductoComponent implements OnInit {
-    private route = inject(ActivatedRoute);
-    private router = inject(Router);
-    private toast = inject(ToastService);
-    private productosService = inject(ProductosService);
-    private cartService = inject(CartService);
-    private translate = inject(TranslateService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
+    private readonly toast = inject(ToastService);
+    private readonly productosService = inject(ProductosService);
+    private readonly cartService = inject(CartService);
+    private readonly translate = inject(TranslateService);
     total_items = 0;
     cantidadSeleccionada = 1;
     mensajeStock = signal('');
@@ -80,7 +80,7 @@ export class DetalleProductoComponent implements OnInit {
             precio: p.price,
             stock: p.stock,
             descripcionCorta: p.description,
-            imagen: p.images?.length ? p.images[p.images.length - 1] : '/placeholder.png',
+            imagen: p.images?.at(-1) ?? '/placeholder.png',
             datasheet: this.translate.instant('PRODUCT_DETAIL.DATASHEET_URL'),
             libreria: this.translate.instant('PRODUCT_DETAIL.LIBRARY_URL'),
             especificaciones: [

@@ -7,9 +7,9 @@ const STORAGE_KEY = STORAGE_KEYS.THEME;
     providedIn: 'root'
 })
 export class ThemeService {
-    private platformId = inject(PLATFORM_ID);
-    private storageService = inject(StorageService);
-    private isDarkSignal = signal(true);
+    private readonly platformId = inject(PLATFORM_ID);
+    private readonly storageService = inject(StorageService);
+    private readonly isDarkSignal = signal(true);
     private get isBrowser(): boolean {
         return isPlatformBrowser(this.platformId);
     }
@@ -24,8 +24,8 @@ export class ThemeService {
         if (!this.isBrowser)
             return;
         const savedTheme = this.storageService.getItem(STORAGE_KEY);
-        const prefersDark = typeof window.matchMedia === 'function'
-            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        const prefersDark = typeof globalThis.matchMedia === 'function'
+            ? globalThis.matchMedia('(prefers-color-scheme: dark)').matches
             : true;
         if (savedTheme) {
             this.isDarkSignal.set(savedTheme === 'dark');

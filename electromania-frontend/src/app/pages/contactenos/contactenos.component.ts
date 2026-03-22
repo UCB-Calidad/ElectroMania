@@ -24,7 +24,7 @@ export class ContactenosComponent {
     sendEmail() {
         const subject = this.translate.instant('CONTACT.EMAIL_SUBJECT');
         const body = this.translate.instant('CONTACT.EMAIL_BODY');
-        window.location.href = `mailto:${this.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        globalThis.location.href = `mailto:${this.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
     onImageError(event: Event): void {
         const target = event.target as HTMLImageElement | null;

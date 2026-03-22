@@ -19,8 +19,8 @@ interface UserProfile {
     styleUrl: './perfil.component.css'
 })
 export class PerfilComponent implements OnInit {
-    private userService = inject(UserService);
-    private translate = inject(TranslateService);
+    private readonly userService = inject(UserService);
+    private readonly translate = inject(TranslateService);
     user = signal<UserProfile | null>(null);
     loading = signal(true);
     isAdminRole = isAdminRole;

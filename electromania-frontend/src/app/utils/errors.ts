@@ -17,13 +17,7 @@ export function getErrorMessage(err: unknown, languageService: LanguageService):
 }
 export class NotFoundError extends Error {
     override name = 'NotFoundError';
-    constructor(message: string) {
-        super(message);
-    }
 }
 export class ValidationError extends Error {
     override name = 'ValidationError';
-    constructor(message: string) {
-        super(message);
-    }
 }

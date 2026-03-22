@@ -14,8 +14,8 @@ import { TranslateModule } from '@ngx-translate/core';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BienvenidaComponent implements OnInit, AfterViewInit {
-    private router = inject(Router);
-    private productosService = inject(ProductosService);
+    private readonly router = inject(Router);
+    private readonly productosService = inject(ProductosService);
     @ViewChild('ofertasList', { static: true })
     ofertasList!: ElementRef<HTMLDivElement>;
     @ViewChild('destacadosList', { static: true })
