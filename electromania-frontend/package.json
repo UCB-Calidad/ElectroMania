@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "test": "ng test --watch=false",
     "test:watch": "ng test",
-    "test:ci": "ng test --watch=false"
+    "test:ci": "ng test --watch=false",
+    "test:co": "ng test --watch=false --coverage --coverage-reporters lcov"
   },
   "prettier": {
     "printWidth": 100,

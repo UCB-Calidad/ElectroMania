@@ -15,8 +15,9 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:cov": "vitest run --ui --coverage ",
-    "test:html": "vitest run --reporter=html --coverage --ui",
+    "test:cov": "vitest run --coverage ",
+    "test:html": "vitest run --reporter=html --coverage",
+    "test:ui": "vitest --ui --coverage",
     "test:debug": "vitest run --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run -c vitest.e2e.config.ts"
   },
