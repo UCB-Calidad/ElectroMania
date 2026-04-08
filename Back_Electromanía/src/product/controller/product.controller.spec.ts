@@ -4,10 +4,12 @@ import { ProductService } from '../service/product.service';
 import { RegisterProductUseCase } from '../use-cases/register-product.use-case';
 import { CreateProductRequestModel } from '../model/CreateProductRequest.model';
 import { RegisterProductImageRequestModel } from '../model/RegisterProductImageRequest.model';
-import { ProductModel, ProductWithCategoriesAndImagesModel } from '../model/Product.model';
+import { ProductWithCategoriesAndImagesModel } from '../model/Product.model';
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Logger } from '@nestjs/common';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { vi } from 'vitest';
 
 // Mock más completo del AuthGuard
 class AuthGuardMock {
@@ -24,8 +26,8 @@ class RolesGuardMock {
 
 describe('ProductController (unit)', () => {
   let controller: ProductController;
-  let productService: jest.Mocked<ProductService>;
-  let registerProductUseCase: jest.Mocked<RegisterProductUseCase>;
+  let productService: vi.Mocked<ProductService>;
+  let registerProductUseCase: vi.Mocked<RegisterProductUseCase>;
 
   const mockProduct: ProductWithCategoriesAndImagesModel = {
     product_id: 1,
@@ -45,49 +47,51 @@ describe('ProductController (unit)', () => {
         {
           provide: ProductService,
           useValue: {
-            getAllProducts: jest.fn().mockResolvedValue([mockProduct]),
-            getPageProduct: jest.fn().mockResolvedValue({
+            getAllProducts: vi.fn().mockResolvedValue([mockProduct]),
+            getPageProduct: vi.fn().mockResolvedValue({
               page: 1,
               max_size_per_page: 20,
               content: [mockProduct],
               totalElements: 1,
             }),
-            registerProductImage: jest.fn().mockResolvedValue(mockProduct),
-            deleteProduct: jest.fn().mockResolvedValue(undefined),
-            updateProduct: jest.fn().mockResolvedValue(mockProduct),
+            registerProductImage: vi.fn().mockResolvedValue(mockProduct),
+            deleteProduct: vi.fn().mockResolvedValue(undefined),
+            updateProduct: vi.fn().mockResolvedValue(mockProduct),
           },
         },
         {
           provide: RegisterProductUseCase,
           useValue: {
-            execute: jest.fn().mockResolvedValue(mockProduct),
+            execute: vi.fn().mockResolvedValue(mockProduct),
           },
         },
         {
           provide: JwtService, // Cambio aquí: usar JwtService directamente
           useValue: {
-            sign: jest.fn().mockReturnValue('token'),
-            decode: jest.fn().mockReturnValue({ user: { uuid: 'uuid' } }),
-            verify: jest.fn().mockReturnValue({ user: { uuid: 'uuid' } }),
+            sign: vi.fn().mockReturnValue('token'),
+            decode: vi.fn().mockReturnValue({ user: { uuid: 'uuid' } }),
+            verify: vi.fn().mockReturnValue({ user: { uuid: 'uuid' } }),
           },
         },
         {
           provide: CACHE_MANAGER,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
-            del: jest.fn(),
+            get: vi.fn(),
+            set: vi.fn(),
+            del: vi.fn(),
           },
         }
       ],
     })
-      .overrideGuard(AuthGuardMock) // Sobrescribir los guards
+      .overrideGuard(AuthGuard)
       .useClass(AuthGuardMock)
+      .overrideGuard(RolesGuard)
+      .useClass(RolesGuardMock)
       .compile();
 
     controller = module.get<ProductController>(ProductController);
-    productService = module.get(ProductService) as jest.Mocked<ProductService>;
-    registerProductUseCase = module.get(RegisterProductUseCase) as jest.Mocked<RegisterProductUseCase>;
+    productService = module.get(ProductService) as vi.Mocked<ProductService>;
+    registerProductUseCase = module.get(RegisterProductUseCase) as vi.Mocked<RegisterProductUseCase>;
   });
 
   it('should be defined', () => {

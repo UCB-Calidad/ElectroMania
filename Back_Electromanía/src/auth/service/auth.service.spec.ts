@@ -11,6 +11,7 @@ import { LoginResponseModel } from '../models/login-response.model';
 import { UserJwtPayloadModel } from '../models/user-jwt-payload.model';
 import { UserRole } from '../../user/enums/UserRole.enum';
 import { UnauthorizedException } from '@nestjs/common';
+import { vi } from 'vitest';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -26,40 +27,40 @@ describe('AuthService', () => {
         {
           provide: UserMapper,
           useValue: {
-            toJwtPayloadModel: jest.fn((user) => new UserJwtPayloadModel(user.uuid, user.email, user.role)),
+            toJwtPayloadModel: vi.fn((user) => new UserJwtPayloadModel(user.uuid, user.email, user.role)),
           },
         },
         {
           provide: PrismaService,
           useValue: {
             user: {
-              findUnique: jest.fn(),
-              create: jest.fn(),
-              deleteMany: jest.fn(),
+              findUnique: vi.fn(),
+              create: vi.fn(),
+              deleteMany: vi.fn(),
             },
           },
         },
         {
           provide: UserService,
           useValue: {
-            registerUser: jest.fn(),
-            registerAdminUser: jest.fn(),
-            getUserByField: jest.fn(),
+            registerUser: vi.fn(),
+            registerAdminUser: vi.fn(),
+            getUserByField: vi.fn(),
           },
         },
         {
           provide: PasswordService,
           useValue: {
-            hashPassword: jest.fn((password: string) => `hashed-${password}`),
-            comparePassword: jest.fn((password: string, hash: string) => password === hash)
+            hashPassword: vi.fn((password: string) => `hashed-${password}`),
+            comparePassword: vi.fn((password: string, hash: string) => password === hash)
           },
         },
         {
           provide: JwtService,
           useValue: {
-            sign: jest.fn(() => 'jwt-token'),
-            verify: jest.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
-            decode: jest.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
+            sign: vi.fn(() => 'jwt-token'),
+            verify: vi.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
+            decode: vi.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
           },
         },
       ],
@@ -86,7 +87,7 @@ describe('AuthService', () => {
       phone: '1234567121',
     };
 
-    (userService.registerUser as jest.Mock).mockResolvedValue({
+    (userService.registerUser as vi.Mock).mockResolvedValue({
       id: 1,
       ...request,
       password: `hashed-${request.password}`,
@@ -110,7 +111,7 @@ describe('AuthService', () => {
       role: UserRole.USER,
     };
 
-    (userService.getUserByField as jest.Mock).mockResolvedValue(mockUser);
+    (userService.getUserByField as vi.Mock).mockResolvedValue(mockUser);
 
     const result: LoginResponseModel = await service.login(request);
 
@@ -120,7 +121,7 @@ describe('AuthService', () => {
   });
 
   it('Deberia lanzar UnauthorizedException si el usuario no existe', async () => {
-    (userService.getUserByField as jest.Mock).mockResolvedValue(null);
+    (userService.getUserByField as vi.Mock).mockResolvedValue(null);
 
     await expect(service.login({ email: 'noexiste@gmail.com', password: 'Password#3101#' }))
       .rejects
@@ -135,7 +136,7 @@ describe('AuthService', () => {
       role: UserRole.USER,
     };
 
-    (userService.getUserByField as jest.Mock).mockResolvedValue(mockUser);
+    (userService.getUserByField as vi.Mock).mockResolvedValue(mockUser);
 
     await expect(service.login({ email: 'pruebas@gmail.com', password: 'Password#3101#' }))
       .rejects

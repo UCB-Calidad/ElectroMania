@@ -7,6 +7,7 @@ import { PageProductMapper } from '../mapper/PageProduct.mapper';
 import { CreateProductRequestModel } from '../model/CreateProductRequest.model';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { vi } from 'vitest';
 
 describe('ProductService (unit)', () => {
   let service: ProductService;
@@ -28,18 +29,18 @@ describe('ProductService (unit)', () => {
     // Mock completo de PrismaService
     prismaMock = {
       product: {
-        create: jest.fn().mockResolvedValue(mockProductEntity),
-        findMany: jest.fn().mockResolvedValue([mockProductEntity]),
-        findUnique: jest.fn().mockResolvedValue(mockProductEntity),
-        update: jest.fn().mockResolvedValue(mockProductEntity),
-        delete: jest.fn().mockResolvedValue(mockProductEntity),
-        reserveStock: jest.fn().mockResolvedValue(mockProductEntity),
+        create: vi.fn().mockResolvedValue(mockProductEntity),
+        findMany: vi.fn().mockResolvedValue([mockProductEntity]),
+        findUnique: vi.fn().mockResolvedValue(mockProductEntity),
+        update: vi.fn().mockResolvedValue(mockProductEntity),
+        delete: vi.fn().mockResolvedValue(mockProductEntity),
+        reserveStock: vi.fn().mockResolvedValue(mockProductEntity),
       },
       productImage: {
-        create: jest.fn().mockResolvedValue({}),
-        deleteMany: jest.fn().mockResolvedValue({}),
+        create: vi.fn().mockResolvedValue({}),
+        deleteMany: vi.fn().mockResolvedValue({}),
       },
-      $transaction: jest.fn().mockImplementation(async (fn) => fn(prismaMock)),
+      $transaction: vi.fn().mockImplementation(async (fn) => fn(prismaMock)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -52,9 +53,9 @@ describe('ProductService (unit)', () => {
         {
           provide: CACHE_MANAGER,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
-            del: jest.fn(),
+            get: vi.fn(),
+            set: vi.fn(),
+            del: vi.fn(),
           },
         }
       ],
@@ -109,6 +110,7 @@ describe('ProductService (unit)', () => {
   });
 
   it('should delete a product', async () => {
+    await service.deleteProduct(1);
     expect(prismaMock.product.delete).toHaveBeenCalledWith({
       where: { product_id: 1 },
     });

@@ -5,6 +5,7 @@ import { ProductService } from '../../product/service/product.service';
 import { UserService } from '../../user/service/user.service';
 import { AuthService } from '../../auth/service/auth.service';
 import { CartMapper } from '../mapper/cart.mapper';
+import { vi } from 'vitest';
 
 describe('CartService', () => {
   let service: CartService;
@@ -29,7 +30,7 @@ describe('CartService', () => {
         {
           provide: AuthService,
           useValue: {
-            getUserFromToken: jest.fn(),
+            getUserFromToken: vi.fn(),
           },
         },
       ],

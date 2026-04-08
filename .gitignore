@@ -62,3 +62,4 @@ slim.report.json
 
 # SonarQube
 .scannerwork/
+/.kilo

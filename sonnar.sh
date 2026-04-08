@@ -56,7 +56,7 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-env NG_CLI_ANALYTICS=false npm run test -- --coverage --watch=false 
+env NG_CLI_ANALYTICS=false npm run test:co 
 
 echo "[Frontend] Coverage completed"
 

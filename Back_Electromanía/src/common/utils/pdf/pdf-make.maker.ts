@@ -16,8 +16,13 @@ const fonts = {
 
 @Injectable()
 export class PdfMakeService implements PdfMaker {
+    private static fontsRegistered = false;
+
     constructor() {
-        pdfMake.addFonts(fonts);
+        if (!PdfMakeService.fontsRegistered) {
+            pdfMake.addFonts(fonts);
+            PdfMakeService.fontsRegistered = true;
+        }
     }
 
     async generatePDF(orderData: OrderReceiptModel): Promise<Buffer> {

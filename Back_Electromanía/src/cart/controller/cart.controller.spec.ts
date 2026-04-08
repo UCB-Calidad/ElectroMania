@@ -4,14 +4,13 @@ import { CartService } from '../service/cart.service';
 import { AddProductToCartUseCase } from '../use-cases/add-product-to-cart.use-case';
 import { UpdateProductQuantityUseCase } from '../use-cases/update-product-quantity.use-case';
 import { AuthGuard } from '../../auth/guards/auth.guard';
-import { AuthModule } from '../../auth/auth.module';
 import { GetActiveCartUseCase } from '../use-cases/get-active-cart.use-case';
 import { IncreaseQuantityUseCase } from '../use-cases/increase-quantity.use-case';
 import { DecreaseQuantityUseCase } from '../use-cases/decrease-quantity.use-case';
 import { RemoveProductFromCartUseCase} from '../use-cases/remove-product-from-cart-use-case';
-import { exec } from 'child_process';
 import { AuthService } from '../../auth/service/auth.service';
 import { CreateCartUseCase } from '../use-cases/create-cart.use-case';
+import { vi } from 'vitest';
 
 describe('CartController', () => {
   let controller: CartController;
@@ -23,53 +22,53 @@ describe('CartController', () => {
         {
           provide: CartService,
           useValue: {
-            createCart: jest.fn(),
-            getCartByUser: jest.fn(),
-            deleteCartDetail: jest.fn(),
+            createCart: vi.fn(),
+            getCartByUser: vi.fn(),
+            deleteCartDetail: vi.fn(),
           },
         },
         {
           provide: AddProductToCartUseCase,
           useValue: {
-            execute: jest.fn(),
+            execute: vi.fn(),
           },
         },
         {
           provide: UpdateProductQuantityUseCase,
           useValue: {
-            execute: jest.fn(),
+            execute: vi.fn(),
           }
         },{
           provide: GetActiveCartUseCase,
           useValue: {
-            execute: jest.fn(),
+            execute: vi.fn(),
           }
         },{
           provide: IncreaseQuantityUseCase,
           useValue: {
-            execute: jest.fn(),
+            execute: vi.fn(),
           }
         },{
             provide: DecreaseQuantityUseCase,
             useValue: {
-              execute: jest.fn(),
+              execute: vi.fn(),
             },
           },{
             provide: RemoveProductFromCartUseCase,
             useValue: {
-              execute: jest.fn(),
+              execute: vi.fn(),
             },
           },
           {
             provide: AuthService,
             useValue: {
-              getUserFromToken: jest.fn(),
+              getUserFromToken: vi.fn(),
             },
           },
           {
             provide: CreateCartUseCase,
             useValue: {
-              execute: jest.fn(),
+              execute: vi.fn(),
             }
           }
       ],

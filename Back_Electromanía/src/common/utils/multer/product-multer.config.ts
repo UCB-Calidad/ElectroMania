@@ -21,4 +21,5 @@ export const productMulterConfig = {
     }
     cb(null, true);
   },
+  // Si quieres permitir solo un archivo, puedes usar 'single' en lugar de 'array' o 'fields'
 };

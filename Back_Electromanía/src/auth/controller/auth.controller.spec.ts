@@ -9,6 +9,7 @@ import { PasswordService } from '../../common/utils/password.service';
 import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { LoginUseCase } from '../use-cases/login.usecase';
+import { vi } from 'vitest';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -21,9 +22,9 @@ describe('AuthController', () => {
         {
           provide: CACHE_MANAGER,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
-            del: jest.fn(),
+            get: vi.fn(),
+            set: vi.fn(),
+            del: vi.fn(),
           },
         },LoginUseCase
       ],
