@@ -7,12 +7,9 @@ import { UserMapper } from './mapper/User.mapper';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [
-        CommonModule,
-        forwardRef(() => AuthModule)
-    ],
-    controllers: [UserController],
-    providers: [UserService,PrismaService,UserMapper],
-    exports: [UserService]
+  imports: [CommonModule, forwardRef(() => AuthModule)],
+  controllers: [UserController],
+  providers: [UserService, PrismaService, UserMapper],
+  exports: [UserService],
 })
 export class UserModule {}

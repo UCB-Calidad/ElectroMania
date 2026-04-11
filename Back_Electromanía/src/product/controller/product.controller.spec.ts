@@ -80,7 +80,7 @@ describe('ProductController (unit)', () => {
             set: vi.fn(),
             del: vi.fn(),
           },
-        }
+        },
       ],
     })
       .overrideGuard(AuthGuard)
@@ -91,7 +91,9 @@ describe('ProductController (unit)', () => {
 
     controller = module.get<ProductController>(ProductController);
     productService = module.get(ProductService) as vi.Mocked<ProductService>;
-    registerProductUseCase = module.get(RegisterProductUseCase) as vi.Mocked<RegisterProductUseCase>;
+    registerProductUseCase = module.get(
+      RegisterProductUseCase,
+    ) as vi.Mocked<RegisterProductUseCase>;
   });
 
   it('should be defined', () => {
@@ -112,7 +114,12 @@ describe('ProductController (unit)', () => {
 
   it('should register a product', async () => {
     const result = await controller.registerProduct(
-      { product_name: 'Producto 1', description: '', price: 100, stock: 10 } as CreateProductRequestModel,
+      {
+        product_name: 'Producto 1',
+        description: '',
+        price: 100,
+        stock: 10,
+      } as CreateProductRequestModel,
       {} as Express.Multer.File,
     );
     expect(result.product_id).toBe(1);

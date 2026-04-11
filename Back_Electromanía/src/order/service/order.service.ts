@@ -24,28 +24,38 @@ export class OrderService {
     readonly authService: AuthService,
     readonly cartService: CartService,
     readonly orderMapper: OrderMapper,
-    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
   // ==================== Public Methods ====================
 
-  async create(createOrderDto: Prisma.OrderCreateInput, tx?: Prisma.TransactionClient) {
+  async create(
+    createOrderDto: Prisma.OrderCreateInput,
+    tx?: Prisma.TransactionClient,
+  ) {
     const prisma = this.getPrismaClient(tx);
     return await this.insertOrder(createOrderDto, prisma);
   }
 
-  private async insertOrder(createOrderDto: Prisma.OrderCreateInput, prisma: Prisma.TransactionClient | PrismaService) {
+  private async insertOrder(
+    createOrderDto: Prisma.OrderCreateInput,
+    prisma: Prisma.TransactionClient | PrismaService,
+  ) {
     return await prisma.order.create({
       data: createOrderDto,
       include: this.getOrderIncludes(),
     });
   }
 
-  async register(uuid: string, cart: CartResponseModel, tx?: Prisma.TransactionClient): Promise<OrderResponseModel> {
+  async register(
+    uuid: string,
+    cart: CartResponseModel,
+    tx?: Prisma.TransactionClient,
+  ): Promise<OrderResponseModel> {
     const orderData = this.buildOrderData(cart);
     const order = await this.create(orderData, tx);
     const response = this.orderMapper.toResponseModel(order as any);
     await this.updateCacheAfterCreate(order.order_id, cart.userUUID, response);
-    return response; 
+    return response;
   }
 
   private buildOrderData(cart: CartResponseModel): Prisma.OrderCreateInput {
@@ -56,10 +66,18 @@ export class OrderService {
     return this.orderMapper.toRegisterEntity(request);
   }
 
-  private async updateCacheAfterCreate(orderId: number, userUuid: string, response: OrderResponseModel): Promise<void> {
+  private async updateCacheAfterCreate(
+    orderId: number,
+    userUuid: string,
+    response: OrderResponseModel,
+  ): Promise<void> {
     this.clearOrderCache(userUuid);
     this.clearAllOrdersCache();
-    await this.cacheManager.set(CacheOrderKeys.orderByID(orderId), response, CACHE_TTL);
+    await this.cacheManager.set(
+      CacheOrderKeys.orderByID(orderId),
+      response,
+      CACHE_TTL,
+    );
   }
 
   async getByUser(userUuid: string): Promise<OrderResponseModel[]> {
@@ -82,8 +100,8 @@ export class OrderService {
   private buildUserOrderFilter(userUuid: string): Prisma.OrderWhereInput {
     return {
       userOrders: {
-        some: { user_uuid: userUuid }
-      }
+        some: { user_uuid: userUuid },
+      },
     };
   }
 
@@ -91,8 +109,15 @@ export class OrderService {
     return orders.map((o) => this.orderMapper.toResponseModel(o));
   }
 
-  private async cacheOrdersByUser(userUuid: string, orders: OrderResponseModel[]): Promise<void> {
-    await this.cacheManager.set(CacheOrderKeys.orderByUser(userUuid), orders, CACHE_TTL);
+  private async cacheOrdersByUser(
+    userUuid: string,
+    orders: OrderResponseModel[],
+  ): Promise<void> {
+    await this.cacheManager.set(
+      CacheOrderKeys.orderByUser(userUuid),
+      orders,
+      CACHE_TTL,
+    );
   }
 
   // ==================== Cache Management ====================
@@ -114,13 +139,21 @@ export class OrderService {
     return cached ? (cached as OrderResponseModel[]) : null;
   }
 
-  private async getCahedOrderById(orderId: number): Promise<OrderResponseModel | null> {
-    const cached = await this.cacheManager.get(CacheOrderKeys.orderByID(orderId));
+  private async getCahedOrderById(
+    orderId: number,
+  ): Promise<OrderResponseModel | null> {
+    const cached = await this.cacheManager.get(
+      CacheOrderKeys.orderByID(orderId),
+    );
     return cached ? (cached as OrderResponseModel) : null;
   }
 
-  private async getCachedOrdersByUser(userUuid: string): Promise<OrderResponseModel[] | null> {
-    const cached = await this.cacheManager.get(CacheOrderKeys.orderByUser(userUuid));
+  private async getCachedOrdersByUser(
+    userUuid: string,
+  ): Promise<OrderResponseModel[] | null> {
+    const cached = await this.cacheManager.get(
+      CacheOrderKeys.orderByUser(userUuid),
+    );
     return cached ? (cached as OrderResponseModel[]) : null;
   }
 
@@ -167,10 +200,16 @@ export class OrderService {
     return order;
   }
 
-  private async cacheOrderById(orderId: number, order: OrderResponseModel): Promise<void> {
-    await this.cacheManager.set(CacheOrderKeys.orderByID(orderId), order, CACHE_TTL);
+  private async cacheOrderById(
+    orderId: number,
+    order: OrderResponseModel,
+  ): Promise<void> {
+    await this.cacheManager.set(
+      CacheOrderKeys.orderByID(orderId),
+      order,
+      CACHE_TTL,
+    );
   }
-
 
   async getOrderForXML(id: number, tx?: Prisma.TransactionClient) {
     const prisma = this.getPrismaClient(tx);
@@ -178,7 +217,10 @@ export class OrderService {
     return this.orderMapper.toOrderReceiptModel(order as any);
   }
 
-  private async fetchOrderForReceipt(id: number, prisma: Prisma.TransactionClient | PrismaService) {
+  private async fetchOrderForReceipt(
+    id: number,
+    prisma: Prisma.TransactionClient | PrismaService,
+  ) {
     const order = await prisma.order.findUnique({
       where: { order_id: id },
       include: this.getOrderReceiptIncludes(id),
@@ -195,19 +237,23 @@ export class OrderService {
     return {
       orderItems: true,
       payment: {
-        where: { order_id: orderId }
+        where: { order_id: orderId },
       },
       cart: {
         include: {
           user: {
-            omit: { password: true }
-          }
-        }
-      }
+            omit: { password: true },
+          },
+        },
+      },
     };
   }
 
-  async update(id: number, updateOrderDto: UpdateOrderModel, tx?: Prisma.TransactionClient): Promise<Order> {
+  async update(
+    id: number,
+    updateOrderDto: UpdateOrderModel,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Order> {
     const prisma = this.getPrismaClient(tx);
     const order = await this.performOrderUpdate(id, updateOrderDto, prisma);
     this.clearCachesAfterUpdate(order);
@@ -215,14 +261,14 @@ export class OrderService {
   }
 
   private async performOrderUpdate(
-    id: number, 
-    updateOrderDto: UpdateOrderModel, 
-    prisma: Prisma.TransactionClient | PrismaService
+    id: number,
+    updateOrderDto: UpdateOrderModel,
+    prisma: Prisma.TransactionClient | PrismaService,
   ) {
     return await prisma.order.update({
       where: { order_id: id },
       data: { status: updateOrderDto.status },
-      include: { userOrders: true }
+      include: { userOrders: true },
     });
   }
 
@@ -233,19 +279,23 @@ export class OrderService {
   }
 
   async saveOrderItems(
-    cartResponseModel: CartResponseModel, 
-    orderId: number, 
-    tx?: Prisma.TransactionClient
+    cartResponseModel: CartResponseModel,
+    orderId: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<void> {
     const prisma = this.getPrismaClient(tx);
     await Promise.all(
-      cartResponseModel.details.map((detail) => 
-        this.createOrderItem(detail, orderId, prisma)
-      )
+      cartResponseModel.details.map((detail) =>
+        this.createOrderItem(detail, orderId, prisma),
+      ),
     );
   }
 
-  private async createOrderItem(detail: any, orderId: number, prisma: Prisma.TransactionClient | PrismaService) {
+  private async createOrderItem(
+    detail: any,
+    orderId: number,
+    prisma: Prisma.TransactionClient | PrismaService,
+  ) {
     return await prisma.orderItem.create({
       data: this.buildOrderItemData(detail, orderId),
     });
@@ -268,22 +318,24 @@ export class OrderService {
 
   // ==================== Private Helper Methods ====================
 
-  private getPrismaClient(tx?: Prisma.TransactionClient): Prisma.TransactionClient | PrismaService {
+  private getPrismaClient(
+    tx?: Prisma.TransactionClient,
+  ): Prisma.TransactionClient | PrismaService {
     return tx ?? this.prisma;
   }
 
   private getOrderIncludes(): Prisma.OrderInclude {
     return {
       userOrders: {
-        include: { user: true }
+        include: { user: true },
       },
       cart: {
         include: {
           cartDetails: {
-            include: { product: true }
-          }
-        }
-      }
+            include: { product: true },
+          },
+        },
+      },
     };
   }
 }

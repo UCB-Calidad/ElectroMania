@@ -18,27 +18,23 @@ import { CreateCartUseCase } from './use-cases/create-cart.use-case';
 import { CartCleanUpService } from './service/cart-clean-up.service';
 
 @Module({
-    imports: [
-        ProductModule, 
-        UserModule,
-        AuthModule
-    ],
-    controllers: [CartController],
-    providers: [
-        CartService, 
-        RolesGuard,
-        AuthGuard,
-        PrismaService,
-        CartMapper,
-        AddProductToCartUseCase,
-        UpdateProductQuantityUseCase,
-        IncreaseQuantityUseCase,
-        DecreaseQuantityUseCase,
-        GetActiveCartUseCase,
-        RemoveProductFromCartUseCase,
-        CreateCartUseCase,
-        CartCleanUpService
-    ],
-    exports: [CartService, GetActiveCartUseCase]
+  imports: [ProductModule, UserModule, AuthModule],
+  controllers: [CartController],
+  providers: [
+    CartService,
+    RolesGuard,
+    AuthGuard,
+    PrismaService,
+    CartMapper,
+    AddProductToCartUseCase,
+    UpdateProductQuantityUseCase,
+    IncreaseQuantityUseCase,
+    DecreaseQuantityUseCase,
+    GetActiveCartUseCase,
+    RemoveProductFromCartUseCase,
+    CreateCartUseCase,
+    CartCleanUpService,
+  ],
+  exports: [CartService, GetActiveCartUseCase],
 })
 export class CartModule {}

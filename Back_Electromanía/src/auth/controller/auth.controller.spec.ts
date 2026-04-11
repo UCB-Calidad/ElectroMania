@@ -17,7 +17,13 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService,UserMapper,UserService,JwtService,PrismaService,PasswordService,
+      providers: [
+        AuthService,
+        UserMapper,
+        UserService,
+        JwtService,
+        PrismaService,
+        PasswordService,
         ConfigService,
         {
           provide: CACHE_MANAGER,
@@ -26,7 +32,8 @@ describe('AuthController', () => {
             set: vi.fn(),
             del: vi.fn(),
           },
-        },LoginUseCase
+        },
+        LoginUseCase,
       ],
     }).compile();
 

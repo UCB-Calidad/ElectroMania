@@ -12,9 +12,11 @@ import * as cookieParser from 'cookie-parser';
 void (async () => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads',
   });
@@ -32,19 +34,19 @@ void (async () => {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document)
+  SwaggerModule.setup('api', app, document);
   app.use(
     '/docs',
     apiReference({
       content: document,
-    })
+    }),
   );
   app.enableCors({
     origin: [
       Configuration().webSiteDomain.url,
       `${Configuration().webSiteDomain.url}:${Configuration().webSiteDomain.port}`,
       'http://localhost',
-      'http://localhost:4200'
+      'http://localhost:4200',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

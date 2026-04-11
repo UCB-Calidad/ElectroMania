@@ -21,6 +21,6 @@ export class LocalImageStorage implements ImageStorage {
 
     await fs.unlink(file.path);
 
-    return `${config().apiDomain.url}/uploads/products/${name}.webp`
+    return `${config().apiDomain.url}/uploads/products/${name}.webp`;
   }
 }

@@ -1,5 +1,5 @@
 import {
-    MessageBody,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -37,22 +37,17 @@ export class OrderGateway
     this.logger.log(`Cliente desconectado: ${client.id}`);
   }
   @SubscribeMessage('order.created')
-  emitOrderCreated(@MessageBody('payload') payload: OrderCreatedEventDto
-  ) {
+  emitOrderCreated(@MessageBody('payload') payload: OrderCreatedEventDto) {
     this.logger.log(`Emitiendo order.created para orden ${payload.order_id}`);
     this.server.emit('order.created', payload);
   }
   @SubscribeMessage('order.updated')
-  emitOrderUpdated(
-    @MessageBody('payload') payload: OrderUpdatedEventDto
-  ) {
+  emitOrderUpdated(@MessageBody('payload') payload: OrderUpdatedEventDto) {
     this.logger.log(`Emitiendo order.updated para orden ${payload.order_id}`);
     this.server.emit('order.updated', payload);
   }
   @SubscribeMessage('order.cancelled')
-  emitOrderCancelled(
-    @MessageBody('payload') payload: OrderCancelledEventDto
-  ) {
+  emitOrderCancelled(@MessageBody('payload') payload: OrderCancelledEventDto) {
     this.logger.log(`Emitiendo order.cancelled para orden ${payload.order_id}`);
     this.server.emit('order.cancelled', payload);
   }

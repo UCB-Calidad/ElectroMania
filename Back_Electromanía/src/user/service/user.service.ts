@@ -1,4 +1,10 @@
-import { ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/service/prisma.service';
 import { PasswordService } from '../../common/utils/password.service';
 import { UserCreateRequestModel } from '../models/UserCreateRequest.model';
@@ -11,23 +17,22 @@ import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
-
   constructor(
     private readonly userMapper: UserMapper,
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
-  async findAll():Promise<User[]>{
+  async findAll(): Promise<User[]> {
     const cachedUserKey = 'allUsers';
     const cachedUsers = await this.cacheManager.get(cachedUserKey);
-    if(cachedUsers){
+    if (cachedUsers) {
       return cachedUsers as User[];
     }
     const users = await this.prisma.user.findMany();
-    await this.cacheManager.set(cachedUserKey, users,8000);
+    await this.cacheManager.set(cachedUserKey, users, 8000);
     return users;
   }
 
@@ -43,22 +48,24 @@ export class UserService {
   }
 
   async registerUser(user: UserCreateRequestModel) {
-    try{
-      const hashedPassword = await this.passwordService.hashPassword(user.password);
+    try {
+      const hashedPassword = await this.passwordService.hashPassword(
+        user.password,
+      );
       user.password = hashedPassword;
       const entity = this.userMapper.toEntity(user);
       const result = await this.createUser(entity);
       return this.userMapper.toRegisterUserModel(result);
-    }catch(error){
-      if(error.code === 'P2002'){
+    } catch (error) {
+      if (error.code === 'P2002') {
         throw new ConflictException('User already exists');
       }
       throw error;
     }
   }
   async getUserByUUID(uuid: string) {
-    const user = await this.getUserByField('uuid',uuid);
-    if(!user){
+    const user = await this.getUserByField('uuid', uuid);
+    if (!user) {
       throw new NotFoundException('User not found');
     }
     return this.userMapper.toModel(user);
@@ -75,36 +82,40 @@ export class UserService {
   async filterBy(filter: Prisma.UserWhereInput) {
     const filterByKey = 'filterBy';
     const usersFiltered = await this.cacheManager.get(filterByKey);
-    if(usersFiltered){
+    if (usersFiltered) {
       return usersFiltered as User[];
     }
     const users = await this.prisma.user.findMany({ where: filter });
-    await this.cacheManager.set(filterByKey, users,8000);
+    await this.cacheManager.set(filterByKey, users, 8000);
     return users;
   }
   async registerAdminUser(user: UserCreateRequestModel) {
-    try{
-      const hashedPassword = await this.passwordService.hashPassword(user.password);
+    try {
+      const hashedPassword = await this.passwordService.hashPassword(
+        user.password,
+      );
       user.password = hashedPassword;
       const entity = this.userMapper.toRegisterAdminUserEntity(user);
       const result = await this.createUser(entity);
       return this.userMapper.toRegisterUserModel(result);
-    }catch(error){
-      if(error.code === 'P2002'){
+    } catch (error) {
+      if (error.code === 'P2002') {
         throw new ConflictException('User already exists');
       }
       throw error;
     }
   }
   async registerEmployedUser(user: UserCreateRequestModel) {
-    try{
-      const hashedPassword = await this.passwordService.hashPassword(user.password);
+    try {
+      const hashedPassword = await this.passwordService.hashPassword(
+        user.password,
+      );
       user.password = hashedPassword;
       const entity = this.userMapper.toRegisterEmployedUserEntity(user);
       const result = await this.createUser(entity);
       return this.userMapper.toRegisterUserModel(result);
-    }catch(error){
-      if(error.code === 'P2002'){
+    } catch (error) {
+      if (error.code === 'P2002') {
         throw new ConflictException('User already exists');
       }
       throw error;

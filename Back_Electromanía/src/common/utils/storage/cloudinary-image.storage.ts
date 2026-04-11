@@ -27,12 +27,12 @@ export class CloudinaryImageStorage implements ImageStorage {
       await sharp(file.path)
         .resize(800, 800, {
           fit: 'inside',
-          withoutEnlargement: true
+          withoutEnlargement: true,
         })
         .webp({ quality: 75 })
         .toFile(optimizedPath);
       const result = await cloudinary.uploader.upload(optimizedPath, {
-        folder:`electromania/${folder}`,
+        folder: `electromania/${folder}`,
         resource_type: 'image',
       });
 

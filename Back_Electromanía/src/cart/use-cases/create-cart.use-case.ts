@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import { CartService } from '../service/cart.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -6,8 +6,8 @@ import { JwtService } from '@nestjs/jwt';
 export class CreateCartUseCase {
   constructor(
     private readonly cartService: CartService,
-    private readonly jwtService: JwtService
-  ) { }
+    private readonly jwtService: JwtService,
+  ) {}
 
   async execute(userUuid: string) {
     return await this.cartService.createCart(userUuid);

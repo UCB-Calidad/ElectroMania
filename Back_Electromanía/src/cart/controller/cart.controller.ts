@@ -12,41 +12,49 @@ import { UserJwtPayloadModel } from '../../auth/models/user-jwt-payload.model';
 
 @Controller('cart')
 export class CartController {
-    logger = new Logger(CartController.name);
-    constructor(
-        private readonly removeProductFromCartUseCase:RemoveProductFromCartUseCase,
-        private readonly addProductToCartUseCase:AddProductToCartUseCase,
-        private readonly updateCartDetails: UpdateProductQuantityUseCase,
-        private readonly getActiveCartUseCase:GetActiveCartUseCase,
-        private readonly createCartUseCase:CreateCartUseCase
-    ) {}
+  logger = new Logger(CartController.name);
+  constructor(
+    private readonly removeProductFromCartUseCase: RemoveProductFromCartUseCase,
+    private readonly addProductToCartUseCase: AddProductToCartUseCase,
+    private readonly updateCartDetails: UpdateProductQuantityUseCase,
+    private readonly getActiveCartUseCase: GetActiveCartUseCase,
+    private readonly createCartUseCase: CreateCartUseCase,
+  ) {}
 
-    @UseGuards(AuthGuard)
-    @Post("create")
-    async createCart(@CurrentUser() user: UserJwtPayloadModel){
-        return this.createCartUseCase.execute(user.uuid);
-    }
+  @UseGuards(AuthGuard)
+  @Post('create')
+  async createCart(@CurrentUser() user: UserJwtPayloadModel) {
+    return this.createCartUseCase.execute(user.uuid);
+  }
 
-    @UseGuards(AuthGuard)
-    @Get("")
-    async getCart(@CurrentUser() user: UserJwtPayloadModel){
-        return this.getActiveCartUseCase.execute(user.uuid);
-    }
+  @UseGuards(AuthGuard)
+  @Get('')
+  async getCart(@CurrentUser() user: UserJwtPayloadModel) {
+    return this.getActiveCartUseCase.execute(user.uuid);
+  }
 
-    @UseGuards(AuthGuard)
-    @Post("addProduct")
-    async addProductToCart(@CurrentUser() user: UserJwtPayloadModel, @Body() updateRequest: UpdateCartDetailDto){
-        return this.addProductToCartUseCase.execute(user.uuid, updateRequest);
-    }
-    @UseGuards(AuthGuard)
-    @Post("deleteProduct")
-    async deleteProductToCart(@CurrentUser() user: UserJwtPayloadModel, @Body() deleteRequest: DeleteProductFromCartDto){
-        return this.removeProductFromCartUseCase.execute(user.uuid, deleteRequest);
-    }
-    @UseGuards(AuthGuard)
-    @Post("update")
-    async updateCartDetail(@CurrentUser() user: UserJwtPayloadModel, @Body() addProduct: UpdateCartDetailDto){
-        return this.updateCartDetails.execute(user.uuid, addProduct);
-    }
-    
+  @UseGuards(AuthGuard)
+  @Post('addProduct')
+  async addProductToCart(
+    @CurrentUser() user: UserJwtPayloadModel,
+    @Body() updateRequest: UpdateCartDetailDto,
+  ) {
+    return this.addProductToCartUseCase.execute(user.uuid, updateRequest);
+  }
+  @UseGuards(AuthGuard)
+  @Post('deleteProduct')
+  async deleteProductToCart(
+    @CurrentUser() user: UserJwtPayloadModel,
+    @Body() deleteRequest: DeleteProductFromCartDto,
+  ) {
+    return this.removeProductFromCartUseCase.execute(user.uuid, deleteRequest);
+  }
+  @UseGuards(AuthGuard)
+  @Post('update')
+  async updateCartDetail(
+    @CurrentUser() user: UserJwtPayloadModel,
+    @Body() addProduct: UpdateCartDetailDto,
+  ) {
+    return this.updateCartDetails.execute(user.uuid, addProduct);
+  }
 }

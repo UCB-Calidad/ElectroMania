@@ -9,27 +9,36 @@ import { RegisterProductCategoryDto } from '../dto/register-product-category.dto
 export class CategoryService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly categoryMapper: CategoryMapper
+    private readonly categoryMapper: CategoryMapper,
   ) {}
 
   async create(category: Prisma.CategoryCreateInput) {
     return await this.prisma.category.create({ data: category });
   }
 
-  async registerCategoryToProduct(registerProductCategory: RegisterProductCategoryDto,tx?: Prisma.TransactionClient) {
-    const prisma = tx || this.prisma
+  async registerCategoryToProduct(
+    registerProductCategory: RegisterProductCategoryDto,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
     const category = await prisma.category.findUnique({
       where: { category_id: registerProductCategory.categoryId },
     });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    return await this.update(registerProductCategory.categoryId,
-      this.categoryMapper.toAddProduct(registerProductCategory),prisma
-    )
+    return await this.update(
+      registerProductCategory.categoryId,
+      this.categoryMapper.toAddProduct(registerProductCategory),
+      prisma,
+    );
   }
-  async update(id: number, category: Prisma.CategoryUpdateInput,tx?: Prisma.TransactionClient) {
-    const prisma = tx || this.prisma
+  async update(
+    id: number,
+    category: Prisma.CategoryUpdateInput,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
     return await prisma.category.update({
       where: { category_id: id },
       data: category,
@@ -41,17 +50,17 @@ export class CategoryService {
   }
 
   async findAll() {
-    try{
+    try {
       const categories = await this.prisma.category.findMany();
-      if(categories.length === 0){
-        throw new NotFoundException(" Categories not found");
+      if (categories.length === 0) {
+        throw new NotFoundException(' Categories not found');
       }
       return categories.map((c) => this.categoryMapper.toModel(c));
-    }catch(e){
-      if(e instanceof NotFoundException){
+    } catch (e) {
+      if (e instanceof NotFoundException) {
         throw e;
       }
-      throw new NotFoundException(" Categories not found");
+      throw new NotFoundException(' Categories not found');
     }
   }
 

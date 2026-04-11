@@ -27,7 +27,10 @@ describe('AuthService', () => {
         {
           provide: UserMapper,
           useValue: {
-            toJwtPayloadModel: vi.fn((user) => new UserJwtPayloadModel(user.uuid, user.email, user.role)),
+            toJwtPayloadModel: vi.fn(
+              (user) =>
+                new UserJwtPayloadModel(user.uuid, user.email, user.role),
+            ),
           },
         },
         {
@@ -52,15 +55,29 @@ describe('AuthService', () => {
           provide: PasswordService,
           useValue: {
             hashPassword: vi.fn((password: string) => `hashed-${password}`),
-            comparePassword: vi.fn((password: string, hash: string) => password === hash)
+            comparePassword: vi.fn(
+              (password: string, hash: string) => password === hash,
+            ),
           },
         },
         {
           provide: JwtService,
           useValue: {
             sign: vi.fn(() => 'jwt-token'),
-            verify: vi.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
-            decode: vi.fn((token: string) => ({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } })),
+            verify: vi.fn((token: string) => ({
+              user: {
+                uuid: '123',
+                email: 'test@gmail.com',
+                role: UserRole.USER,
+              },
+            })),
+            decode: vi.fn((token: string) => ({
+              user: {
+                uuid: '123',
+                email: 'test@gmail.com',
+                role: UserRole.USER,
+              },
+            })),
           },
         },
       ],
@@ -117,15 +134,21 @@ describe('AuthService', () => {
 
     expect(result).toBeTruthy();
     expect(result.access_token).toBe('jwt-token');
-    expect(userService.getUserByField).toHaveBeenCalledWith('email', request.email);
+    expect(userService.getUserByField).toHaveBeenCalledWith(
+      'email',
+      request.email,
+    );
   });
 
   it('Deberia lanzar UnauthorizedException si el usuario no existe', async () => {
     (userService.getUserByField as vi.Mock).mockResolvedValue(null);
 
-    await expect(service.login({ email: 'noexiste@gmail.com', password: 'Password#3101#' }))
-      .rejects
-      .toThrow(UnauthorizedException);
+    await expect(
+      service.login({
+        email: 'noexiste@gmail.com',
+        password: 'Password#3101#',
+      }),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
   it('Deberia lanzar UnauthorizedException si la contraseña es incorrecta', async () => {
@@ -138,20 +161,25 @@ describe('AuthService', () => {
 
     (userService.getUserByField as vi.Mock).mockResolvedValue(mockUser);
 
-    await expect(service.login({ email: 'pruebas@gmail.com', password: 'Password#3101#' }))
-      .rejects
-      .toThrow(UnauthorizedException);
+    await expect(
+      service.login({ email: 'pruebas@gmail.com', password: 'Password#3101#' }),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
   it('Deberia generar y validar un token', async () => {
-    const payload = new UserJwtPayloadModel('123', 'test@gmail.com', UserRole.USER);
+    const payload = new UserJwtPayloadModel(
+      '123',
+      'test@gmail.com',
+      UserRole.USER,
+    );
 
     const token: LoginResponseModel = await service['generateToken'](payload);
 
     expect(token.access_token).toBe('jwt-token');
 
     const decoded = await service.validateToken(token.access_token);
-    expect(decoded).toEqual({ user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER } });
+    expect(decoded).toEqual({
+      user: { uuid: '123', email: 'test@gmail.com', role: UserRole.USER },
+    });
   });
-
 });

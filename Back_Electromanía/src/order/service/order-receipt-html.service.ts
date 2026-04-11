@@ -13,7 +13,7 @@ export class OrderReceiptService {
           <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">Bs. ${Number(item.unit_price).toFixed(2)}</td>
           <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">Bs. ${Number(item.total).toFixed(2)}</td>
         </tr>
-      `
+      `,
       )
       .join('');
 
@@ -181,9 +181,11 @@ export class OrderReceiptService {
           </svg>
           Información de la Orden
         </h3>
-        <p><strong>Fecha:</strong> ${new Date(orderData.created_at).toLocaleString('es-BO', { 
-          dateStyle: 'full', 
-          timeStyle: 'short' 
+        <p><strong>Fecha:</strong> ${new Date(
+          orderData.created_at,
+        ).toLocaleString('es-BO', {
+          dateStyle: 'full',
+          timeStyle: 'short',
         })}</p>
         <p><strong>Estado:</strong> ${orderData.status.translate}</p>
       </div>

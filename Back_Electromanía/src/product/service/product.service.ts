@@ -1,6 +1,15 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/service/prisma.service';
-import { ProductMapper, ProductWithCategoriesAndImages } from '../mapper/Product.mapper';
+import {
+  ProductMapper,
+  ProductWithCategoriesAndImages,
+} from '../mapper/Product.mapper';
 import { ProductImageMapper } from '../mapper/ProductImage.mapper';
 import { PageProductMapper } from '../mapper/PageProduct.mapper';
 import { ProductModel } from '../model/Product.model';
@@ -15,30 +24,37 @@ import { CacheProductKeys } from '../cache/cache-products.keys';
 
 @Injectable()
 export class ProductService {
-  loger = new Logger(ProductService.name)
-  private readonly CacheProductKeys = CacheProductKeys
-  constructor(private readonly prisma: PrismaService,
+  loger = new Logger(ProductService.name);
+  private readonly CacheProductKeys = CacheProductKeys;
+  constructor(
+    private readonly prisma: PrismaService,
     private readonly productMapper: ProductMapper,
     private readonly productImageMapper: ProductImageMapper,
     private readonly pageProductMapper: PageProductMapper,
-    @Inject(CACHE_MANAGER) private readonly cacheManager:Cache
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
-  async createProduct(dto: CreateProductRequestModel, tx?: Prisma.TransactionClient): Promise<ProductModel> {
+  async createProduct(
+    dto: CreateProductRequestModel,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ProductModel> {
     const product = await this.insertProduct(dto);
     return this.productMapper.toModelWithCategoryAndImages(product);
   }
 
-  private async insertProduct(dto: CreateProductRequestModel): Promise<ProductWithCategoriesAndImages> {
+  private async insertProduct(
+    dto: CreateProductRequestModel,
+  ): Promise<ProductWithCategoriesAndImages> {
     const data = this.productMapper.toEntity(dto);
     return await this.prisma.product.create({
       data,
-      include: this.getProductIncludes()
+      include: this.getProductIncludes(),
     });
   }
 
   async registerProductImage(
-    dto: RegisterProductImageRequestModel, tx?: Prisma.TransactionClient
+    dto: RegisterProductImageRequestModel,
+    tx?: Prisma.TransactionClient,
   ): Promise<ProductModel> {
     const prisma = this.getPrismaClient(tx);
     const product = await this.findProductByName(dto.name, prisma);
@@ -46,7 +62,10 @@ export class ProductService {
     return await this.getProductById(product.product_id, tx);
   }
 
-  private async findProductByName(productName: string, prisma: Prisma.TransactionClient | PrismaService) {
+  private async findProductByName(
+    productName: string,
+    prisma: Prisma.TransactionClient | PrismaService,
+  ) {
     const product = await prisma.product.findUnique({
       where: { product_name: productName },
       include: { productImages: true },
@@ -60,9 +79,9 @@ export class ProductService {
   }
 
   private async createProductImage(
-    dto: RegisterProductImageRequestModel, 
+    dto: RegisterProductImageRequestModel,
     product: any,
-    prisma: Prisma.TransactionClient | PrismaService
+    prisma: Prisma.TransactionClient | PrismaService,
   ): Promise<void> {
     const imageData = this.productImageMapper.toEntity(dto, product);
     await prisma.productImage.create({ data: imageData });
@@ -79,14 +98,16 @@ export class ProductService {
   }
 
   private async getCachedProducts(): Promise<ProductModel[] | null> {
-    const cachedProducts = await this.cacheManager.get(this.CacheProductKeys.allProducts);
+    const cachedProducts = await this.cacheManager.get(
+      this.CacheProductKeys.allProducts,
+    );
     return cachedProducts ? (cachedProducts as ProductModel[]) : null;
   }
 
   private async fetchAllProducts(): Promise<ProductWithCategoriesAndImages[]> {
     return await this.prisma.product.findMany({
       include: this.getProductIncludes(),
-      orderBy: { product_id: 'asc' }
+      orderBy: { product_id: 'asc' },
     });
   }
 
@@ -96,17 +117,32 @@ export class ProductService {
     }
   }
 
-  private mapProductsToModels(products: ProductWithCategoriesAndImages[]): ProductModel[] {
-    return products.map((p) => this.productMapper.toModelWithCategoryAndImages(p));
+  private mapProductsToModels(
+    products: ProductWithCategoriesAndImages[],
+  ): ProductModel[] {
+    return products.map((p) =>
+      this.productMapper.toModelWithCategoryAndImages(p),
+    );
   }
 
   private async cacheProducts(products: ProductModel[]): Promise<void> {
-    await this.cacheManager.set(this.CacheProductKeys.allProducts, products, 500);
+    await this.cacheManager.set(
+      this.CacheProductKeys.allProducts,
+      products,
+      500,
+    );
   }
 
-  async getPageProduct(page: number, filter?: any): Promise<PageProductResponseModel> {
+  async getPageProduct(
+    page: number,
+    filter?: any,
+  ): Promise<PageProductResponseModel> {
     const pagination = this.calculatePagination(page);
-    const products = await this.getPageProductsByFilter(filter, pagination.skip, pagination.take);
+    const products = await this.getPageProductsByFilter(
+      filter,
+      pagination.skip,
+      pagination.take,
+    );
     return this.pageProductMapper.toResponse(page, products);
   }
 
@@ -116,24 +152,34 @@ export class ProductService {
     return { skip, take };
   }
 
-
-  private async getPageProductsByFilter(filter: any, skip?: number, take?: number): Promise<ProductModel[]> {
+  private async getPageProductsByFilter(
+    filter: any,
+    skip?: number,
+    take?: number,
+  ): Promise<ProductModel[]> {
     const cachedProducts = await this.getCachedPageProducts();
-    const products = cachedProducts || await this.fetchPageProducts(filter, skip, take);
-    
+    const products =
+      cachedProducts || (await this.fetchPageProducts(filter, skip, take));
+
     await this.cachePageProducts(products);
     return this.mapProductsToModels(products);
   }
 
-  private async getCachedPageProducts(): Promise<ProductWithCategoriesAndImages[] | null> {
-    const cachedProducts = await this.cacheManager.get(this.CacheProductKeys.pageProducts);
-    return cachedProducts ? (cachedProducts as ProductWithCategoriesAndImages[]) : null;
+  private async getCachedPageProducts(): Promise<
+    ProductWithCategoriesAndImages[] | null
+  > {
+    const cachedProducts = await this.cacheManager.get(
+      this.CacheProductKeys.pageProducts,
+    );
+    return cachedProducts
+      ? (cachedProducts as ProductWithCategoriesAndImages[])
+      : null;
   }
 
   private async fetchPageProducts(
-    filter: any, 
-    skip?: number, 
-    take?: number
+    filter: any,
+    skip?: number,
+    take?: number,
   ): Promise<ProductWithCategoriesAndImages[]> {
     return await this.prisma.product.findMany({
       where: filter,
@@ -143,17 +189,24 @@ export class ProductService {
     });
   }
 
-  private async cachePageProducts(products: ProductWithCategoriesAndImages[]): Promise<void> {
-    await this.cacheManager.set(this.CacheProductKeys.pageProducts, products, 500);
+  private async cachePageProducts(
+    products: ProductWithCategoriesAndImages[],
+  ): Promise<void> {
+    await this.cacheManager.set(
+      this.CacheProductKeys.pageProducts,
+      products,
+      500,
+    );
   }
-
 
   async getFilterBy(filter: Prisma.ProductWhereInput): Promise<ProductModel[]> {
     const products = await this.fetchProductsByFilter(filter);
     return this.mapProductsToModels(products);
   }
 
-  private async fetchProductsByFilter(filter: Prisma.ProductWhereInput): Promise<ProductWithCategoriesAndImages[]> {
+  private async fetchProductsByFilter(
+    filter: Prisma.ProductWhereInput,
+  ): Promise<ProductWithCategoriesAndImages[]> {
     return await this.prisma.product.findMany({
       where: filter,
       include: this.getProductIncludes(),
@@ -170,8 +223,8 @@ export class ProductService {
   }
 
   private async updateProductData(
-    productId: number, 
-    dto: Partial<CreateProductRequestModel>
+    productId: number,
+    dto: Partial<CreateProductRequestModel>,
   ): Promise<ProductWithCategoriesAndImages> {
     return await this.prisma.product.update({
       where: { product_id: productId },
@@ -212,14 +265,17 @@ export class ProductService {
     this.cacheManager.del(this.CacheProductKeys.allProducts);
     this.cacheManager.del(this.CacheProductKeys.pageProducts);
   }
-  async getProductById(productId: number, tx?: Prisma.TransactionClient): Promise<ProductModel> {
+  async getProductById(
+    productId: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ProductModel> {
     const product = await this.findProductById(productId, tx);
     return this.productMapper.toModelWithCategoryAndImages(product);
   }
 
   private async findProductById(
-    productId: number, 
-    tx?: Prisma.TransactionClient
+    productId: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<ProductWithCategoriesAndImages> {
     const prisma = this.getPrismaClient(tx);
     const product = await prisma.product.findUnique({
@@ -237,21 +293,32 @@ export class ProductService {
       productImages: true,
       productCategories: {
         include: {
-          category: true
-        }
-      }
+          category: true,
+        },
+      },
     };
   }
-  async checkStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<boolean> {
+  async checkStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<boolean> {
     const product = await this.getProductStockInfo(productId, tx);
     return this.hasAvailableStock(product, quantity);
   }
 
-  private hasAvailableStock(product: { stock_total: number; stock_reserved: number }, quantity: number): boolean {
+  private hasAvailableStock(
+    product: { stock_total: number; stock_reserved: number },
+    quantity: number,
+  ): boolean {
     const availableStock = this.calculateAvailableStock(product);
     return availableStock >= quantity;
   }
-  async addStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
+  async addStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     this.validateQuantity(quantity);
     const product = await this.incrementTotalStock(productId, quantity, tx);
     this.deleteAllProductCache();
@@ -259,9 +326,9 @@ export class ProductService {
   }
 
   private async incrementTotalStock(
-    productId: number, 
-    quantity: number, 
-    tx?: Prisma.TransactionClient
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<Product> {
     const prisma = this.getPrismaClient(tx);
     return await prisma.product.update({
@@ -270,7 +337,11 @@ export class ProductService {
     });
   }
 
-  async reserveStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
+  async reserveStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     this.validateQuantity(quantity);
     await this.ensureSufficientStock(productId, quantity, tx);
     const product = await this.incrementReservedStock(productId, quantity, tx);
@@ -279,9 +350,9 @@ export class ProductService {
   }
 
   private async incrementReservedStock(
-    productId: number, 
-    quantity: number, 
-    tx?: Prisma.TransactionClient
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<Product> {
     const prisma = this.getPrismaClient(tx);
     return await prisma.product.update({
@@ -290,15 +361,19 @@ export class ProductService {
     });
   }
 
-  async releaseReservedStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
+  async releaseReservedStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     this.validateQuantity(quantity);
     return await this.decrementReservedStock(productId, quantity, tx);
   }
 
   private async decrementReservedStock(
-    productId: number, 
-    quantity: number, 
-    tx?: Prisma.TransactionClient
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<Product> {
     const prisma = this.getPrismaClient(tx);
     return await prisma.product.update({
@@ -307,18 +382,26 @@ export class ProductService {
     });
   }
 
-  async confirmSale(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
+  async confirmSale(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     this.validateQuantity(quantity);
     await this.ensureSufficientReservedStock(productId, quantity, tx);
-    const product = await this.decrementTotalAndReservedStock(productId, quantity, tx);
+    const product = await this.decrementTotalAndReservedStock(
+      productId,
+      quantity,
+      tx,
+    );
     this.deleteAllProductCache();
     return product;
   }
 
   private async decrementTotalAndReservedStock(
-    productId: number, 
-    quantity: number, 
-    tx?: Prisma.TransactionClient
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
   ): Promise<Product> {
     const prisma = this.getPrismaClient(tx);
     return await prisma.product.update({
@@ -330,14 +413,22 @@ export class ProductService {
     });
   }
 
-  async recoverReservedQuantity(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product> {
+  async recoverReservedQuantity(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     return await this.addStock(productId, quantity, tx);
   }
 
   /**
    * @deprecated Use confirmSale instead. This method will be removed in future versions.
    */
-  async discountStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<Product | undefined> {
+  async discountStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product | undefined> {
     if (this.isInvalidQuantity(quantity)) return;
     return await this.confirmSale(productId, quantity, tx);
   }
@@ -346,7 +437,9 @@ export class ProductService {
     return quantity <= 0;
   }
 
-  private getPrismaClient(tx?: Prisma.TransactionClient): Prisma.TransactionClient | PrismaService {
+  private getPrismaClient(
+    tx?: Prisma.TransactionClient,
+  ): Prisma.TransactionClient | PrismaService {
     return tx ?? this.prisma;
   }
 
@@ -356,61 +449,91 @@ export class ProductService {
     }
   }
 
-  private async getProductStockInfo(productId: number, tx?: Prisma.TransactionClient) {
+  private async getProductStockInfo(
+    productId: number,
+    tx?: Prisma.TransactionClient,
+  ) {
     const prisma = this.getPrismaClient(tx);
     const product = await prisma.product.findUnique({
       where: { product_id: productId },
       select: { stock_total: true, stock_reserved: true },
     });
-    
+
     if (!product) {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
-    
+
     return product;
   }
 
-  private calculateAvailableStock(product: { stock_total: number; stock_reserved: number }): number {
+  private calculateAvailableStock(product: {
+    stock_total: number;
+    stock_reserved: number;
+  }): number {
     return product.stock_total - product.stock_reserved;
   }
 
-  private async ensureSufficientStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<void> {
+  private async ensureSufficientStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
     const product = await this.getProductStockInfo(productId, tx);
     const availableStock = this.calculateAvailableStock(product);
-    
+
     if (availableStock < quantity) {
       this.throwInsufficientStockError(quantity, availableStock);
     }
   }
 
-  private async ensureSufficientReservedStock(productId: number, quantity: number, tx?: Prisma.TransactionClient): Promise<void> {
+  private async ensureSufficientReservedStock(
+    productId: number,
+    quantity: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
     const product = await this.getProductStockInfo(productId, tx);
-    
+
     if (product.stock_reserved < quantity) {
-      this.throwInsufficientReservedStockError(quantity, product.stock_reserved);
+      this.throwInsufficientReservedStockError(
+        quantity,
+        product.stock_reserved,
+      );
     }
   }
 
-  private throwInsufficientStockError(requested: number, available: number): never {
+  private throwInsufficientStockError(
+    requested: number,
+    available: number,
+  ): never {
     throw new ForbiddenException(
-      `Insufficient stock. Requested: ${requested}, Available: ${available}`
+      `Insufficient stock. Requested: ${requested}, Available: ${available}`,
     );
   }
 
-  private throwInsufficientReservedStockError(requested: number, reserved: number): never {
+  private throwInsufficientReservedStockError(
+    requested: number,
+    reserved: number,
+  ): never {
     throw new ForbiddenException(
-      `Insufficient reserved stock. Requested: ${requested}, Reserved: ${reserved}`
+      `Insufficient reserved stock. Requested: ${requested}, Reserved: ${reserved}`,
     );
   }
-  async assignCategory(request: RegisterProductCategoryDto, tx?: Prisma.TransactionClient): Promise<Product> {
+  async assignCategory(
+    request: RegisterProductCategoryDto,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Product> {
     const prisma = this.getPrismaClient(tx);
-    return await this.linkProductToCategory(prisma, request.productId, request.categoryId);
+    return await this.linkProductToCategory(
+      prisma,
+      request.productId,
+      request.categoryId,
+    );
   }
 
   private async linkProductToCategory(
-    prisma: Prisma.TransactionClient | PrismaService, 
-    productId: number, 
-    categoryId: number
+    prisma: Prisma.TransactionClient | PrismaService,
+    productId: number,
+    categoryId: number,
   ): Promise<Product> {
     const existingRelation = await prisma.productCategory.findUnique({
       where: {
