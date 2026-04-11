@@ -2,7 +2,12 @@ import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { UserCreateRequestModel } from '../../user/models/UserCreateRequest.model';
 import { UserLoginRequestModel } from '../models/user-login.model';
-import { ApiFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserModel } from '../../user/models/User.model';
 import { UserJwtPayloadModel } from '../models/user-jwt-payload.model';
 import { Response } from 'express';
@@ -16,8 +21,9 @@ import { PasswordService } from '../../common/utils/password.service';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService,
-    private readonly loginUseCase:LoginUseCase
+  constructor(
+    private readonly authService: AuthService,
+    private readonly loginUseCase: LoginUseCase,
   ) {}
 
   @ApiOperation({
@@ -37,11 +43,11 @@ export class AuthController {
             email: 'prueba@gmail',
             password: PasswordService.generateStrongPassword(),
             nit_ci: '123456789',
-            social_reason: 'prueba'
-          }
+            social_reason: 'prueba',
+          },
         },
       },
-    }
+    },
   })
   @ApiOkResponse({
     description: 'Usuario registrado',
@@ -51,16 +57,16 @@ export class AuthController {
       name: 'prueba',
       email: 'prueba@gmail',
       nit_ci: '123456789',
-      social_reason: 'prueba'
-    }
+      social_reason: 'prueba',
+    },
   })
   @ApiFoundResponse({
     description: 'El usuario ya existe',
     type: String,
-    example: 'El usuario ya existe'
+    example: 'El usuario ya existe',
   })
   @Post('register')
-  async registerUser(@Body()request: UserCreateRequestModel) {
+  async registerUser(@Body() request: UserCreateRequestModel) {
     return this.authService.registerUser(request);
   }
 
@@ -79,21 +85,23 @@ export class AuthController {
           example: {
             email: 'prueba@gmail',
             password: PasswordService.generateStrongPassword(),
-          }
+          },
         },
       },
-    }
+    },
   })
   @ApiOkResponse({
     description: 'Token de acceso del usuario',
     type: UserJwtPayloadModel,
     example: {
-      access_token: '2ef2sdfkmsdsdflnsfdmlmsldflsdfmlkmsdfmlsdflnslfmlsdkmflkmdslfmksmlfkdmskl'
-    }
+      access_token:
+        '2ef2sdfkmsdsdflnsfdmlmsldflsdfmlkmsdfmlsdflnslfmlsdkmflkmdslfmksmlfkdmskl',
+    },
   })
   @Post('login')
-  async login(@Body() request: UserLoginRequestModel,
-    @Res({passthrough: true})res:Response
+  async login(
+    @Body() request: UserLoginRequestModel,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const response = await this.loginUseCase.execute(request);
     res.cookie('access_token', response.access_token, {
@@ -104,16 +112,16 @@ export class AuthController {
       path: '/',
       maxAge: 1000 * 60 * 60 * 24, // 1 día
     });
-    return response.user
+    return response.user;
   }
   @Roles(UserRole.ADMIN)
-  @UseGuards(AuthGuard,RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post('register-admin')
   async registerAdminUser(@Body() request: UserCreateRequestModel) {
     return this.authService.registerAdminUser(request);
   }
   @Roles(UserRole.ADMIN)
-  @UseGuards(AuthGuard,RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post('employee')
   async registerEmployeeUser(@Body() request: UserCreateRequestModel) {
     return this.authService.registerEmployeeUser(request);

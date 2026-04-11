@@ -51,8 +51,10 @@ export class MailService implements OnModuleInit {
           },
         ],
       });
-      
-      this.logger.log(`Receipt email sent successfully to ${to} for order #${orderNumber}`);
+
+      this.logger.log(
+        `Receipt email sent successfully to ${to} for order #${orderNumber}`,
+      );
     } catch (error) {
       this.logger.error(`Error sending receipt email: ${error.message}`);
       throw error;

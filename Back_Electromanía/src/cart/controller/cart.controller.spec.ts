@@ -7,7 +7,7 @@ import { AuthGuard } from '../../auth/guards/auth.guard';
 import { GetActiveCartUseCase } from '../use-cases/get-active-cart.use-case';
 import { IncreaseQuantityUseCase } from '../use-cases/increase-quantity.use-case';
 import { DecreaseQuantityUseCase } from '../use-cases/decrease-quantity.use-case';
-import { RemoveProductFromCartUseCase} from '../use-cases/remove-product-from-cart-use-case';
+import { RemoveProductFromCartUseCase } from '../use-cases/remove-product-from-cart-use-case';
 import { AuthService } from '../../auth/service/auth.service';
 import { CreateCartUseCase } from '../use-cases/create-cart.use-case';
 import { vi } from 'vitest';
@@ -37,40 +37,44 @@ describe('CartController', () => {
           provide: UpdateProductQuantityUseCase,
           useValue: {
             execute: vi.fn(),
-          }
-        },{
+          },
+        },
+        {
           provide: GetActiveCartUseCase,
           useValue: {
             execute: vi.fn(),
-          }
-        },{
+          },
+        },
+        {
           provide: IncreaseQuantityUseCase,
           useValue: {
             execute: vi.fn(),
-          }
-        },{
-            provide: DecreaseQuantityUseCase,
-            useValue: {
-              execute: vi.fn(),
-            },
-          },{
-            provide: RemoveProductFromCartUseCase,
-            useValue: {
-              execute: vi.fn(),
-            },
           },
-          {
-            provide: AuthService,
-            useValue: {
-              getUserFromToken: vi.fn(),
-            },
+        },
+        {
+          provide: DecreaseQuantityUseCase,
+          useValue: {
+            execute: vi.fn(),
           },
-          {
-            provide: CreateCartUseCase,
-            useValue: {
-              execute: vi.fn(),
-            }
-          }
+        },
+        {
+          provide: RemoveProductFromCartUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            getUserFromToken: vi.fn(),
+          },
+        },
+        {
+          provide: CreateCartUseCase,
+          useValue: {
+            execute: vi.fn(),
+          },
+        },
       ],
     })
       .overrideGuard(AuthGuard)

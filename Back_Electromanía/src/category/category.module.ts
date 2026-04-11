@@ -10,6 +10,12 @@ import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [AuthModule],
   controllers: [CategoryController],
-  providers: [CategoryService,PrismaService,AuthGuard,RolesGuard,CategoryMapper],
+  providers: [
+    CategoryService,
+    PrismaService,
+    AuthGuard,
+    RolesGuard,
+    CategoryMapper,
+  ],
 })
 export class CategoryModule {}

@@ -31,12 +31,36 @@ import { HttpModule } from '@nestjs/axios';
 import { PdfMakeService } from '../common/utils/pdf/pdf-make.maker';
 import { OrderGateway } from './gateway/order.gateway';
 
-
 @Module({
-  imports: [ProductModule, UserModule,AuthModule, HttpModule],
+  imports: [ProductModule, UserModule, AuthModule, HttpModule],
   controllers: [OrderController],
-  providers: [OrderService,RolesGuard,AuthGuard,PrismaService,CartService,OrderMapper,CartMapper,CreateOrderByCartUseCase,ProductService,AuthService,UserMapper,PasswordService,JwtService, ProductMapper,ProductImageMapper,PageProductMapper,ConfirmPaymentForOrderUseCase,CancelOrderUseCase,UpdateOrderStatusUseCase,GenerateOrderXmlUseCase,OrderReceiptService,PaymentService,SendOrderReceiptUseCase,MailService,PdfMakeService,
-    OrderGateway
+  providers: [
+    OrderService,
+    RolesGuard,
+    AuthGuard,
+    PrismaService,
+    CartService,
+    OrderMapper,
+    CartMapper,
+    CreateOrderByCartUseCase,
+    ProductService,
+    AuthService,
+    UserMapper,
+    PasswordService,
+    JwtService,
+    ProductMapper,
+    ProductImageMapper,
+    PageProductMapper,
+    ConfirmPaymentForOrderUseCase,
+    CancelOrderUseCase,
+    UpdateOrderStatusUseCase,
+    GenerateOrderXmlUseCase,
+    OrderReceiptService,
+    PaymentService,
+    SendOrderReceiptUseCase,
+    MailService,
+    PdfMakeService,
+    OrderGateway,
   ],
 })
 export class OrderModule {}

@@ -1,5 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { ImageStorage } from './image-storage.interface';
 import * as sharp from 'sharp';
 import { unlink } from 'node:fs/promises';
@@ -35,7 +39,9 @@ export class R2ImageStorage implements ImageStorage {
     const bucket = this.buckets[folder];
 
     if (!bucket) {
-      throw new InternalServerErrorException(`Bucket not configured for ${folder}`);
+      throw new InternalServerErrorException(
+        `Bucket not configured for ${folder}`,
+      );
     }
 
     const optimizedPath = this.getOptimizedPath(file.path);
@@ -62,7 +68,7 @@ export class R2ImageStorage implements ImageStorage {
 
       return `${this.publicUrl}/${key}`;
     } catch (error) {
-      console.error("R2 upload failed:",error);
+      console.error('R2 upload failed:', error);
       throw new InternalServerErrorException('R2 upload failed');
     } finally {
       await unlink(file.path).catch(() => {});

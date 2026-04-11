@@ -57,7 +57,7 @@ describe('ProductService (unit)', () => {
             set: vi.fn(),
             del: vi.fn(),
           },
-        }
+        },
       ],
     }).compile();
 
@@ -123,15 +123,24 @@ describe('ProductService (unit)', () => {
     const result = await service.getProductById(1);
     expect(result.product_id).toBe(1);
     expect(prismaMock.product.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { product_id: 1 }, include: expect.any(Object) }),
+      expect.objectContaining({
+        where: { product_id: 1 },
+        include: expect.any(Object),
+      }),
     );
   });
 
   it('should check stock', async () => {
-    prismaMock.product.findUnique.mockResolvedValueOnce({ stock_reserved: 10, stock_total: 15 });
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      stock_reserved: 10,
+      stock_total: 15,
+    });
     const hasStock = await service.checkStock(1, 5);
     expect(hasStock).toBe(true);
-    prismaMock.product.findUnique.mockResolvedValueOnce({ stock_reserved: 2, stock_total: 10 });
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      stock_reserved: 2,
+      stock_total: 10,
+    });
     const lowStock = await service.checkStock(1, 1);
     expect(lowStock).toBe(true);
   });
@@ -151,7 +160,10 @@ describe('ProductService (unit)', () => {
     expect(prismaMock.product.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { product_id: 1 },
-        data: { stock_total: { decrement: 5 }, stock_reserved: { decrement: 5 } },
+        data: {
+          stock_total: { decrement: 5 },
+          stock_reserved: { decrement: 5 },
+        },
       }),
     );
   });

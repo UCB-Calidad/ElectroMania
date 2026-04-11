@@ -1,5 +1,5 @@
 export enum ProductState {
-    AVAILABLE = 'available',
-    UNAVAILABLE = 'unavailable',
-    DELETED = 'deleted'
+  AVAILABLE = 'available',
+  UNAVAILABLE = 'unavailable',
+  DELETED = 'deleted',
 }

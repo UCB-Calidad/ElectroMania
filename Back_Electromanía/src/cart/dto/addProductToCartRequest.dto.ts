@@ -1,9 +1,5 @@
-import { UpdateCartDetailDto } from "./update-cart-detail.dto";
+import { UpdateCartDetailDto } from './update-cart-detail.dto';
 
-export class AddProductToCartRequestDto extends UpdateCartDetailDto {
-    
-}
+export class AddProductToCartRequestDto extends UpdateCartDetailDto {}
 
-export class MinusProductToCartRequestDto extends UpdateCartDetailDto {
-    
-}
+export class MinusProductToCartRequestDto extends UpdateCartDetailDto {}

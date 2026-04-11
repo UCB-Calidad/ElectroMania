@@ -16,8 +16,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-        CommonModule, 
-        UserModule, 
+    CommonModule,
+    UserModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [Configuration],
@@ -33,7 +33,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     CacheModule.register({ isGlobal: true }),
   ],
   controllers: [AppController],
-  providers: [
-         AppService],
+  providers: [AppService],
 })
 export class AppModule {}

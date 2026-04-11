@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { OrderStatus, OrderUserModel } from '../models/order-response.model';
 
 export class OrderCreatedEventDto {
@@ -6,7 +12,7 @@ export class OrderCreatedEventDto {
   @IsNotEmpty()
   order_id: number;
   @IsNotEmpty()
-  user: OrderUserModel
+  user: OrderUserModel;
   @IsNumber()
   @IsNotEmpty()
   total: number;
@@ -23,7 +29,7 @@ export class OrderUpdatedEventDto {
   @IsNotEmpty()
   order_id: number;
   @IsNotEmpty()
-  user: OrderUserModel
+  user: OrderUserModel;
   @IsNumber()
   @IsNotEmpty()
   total: number;

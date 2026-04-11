@@ -1,3 +1,3 @@
 export class CreateCartRequestDto {
-    user_uuid: string;
+  user_uuid: string;
 }

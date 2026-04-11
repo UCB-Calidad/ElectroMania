@@ -6,11 +6,11 @@ export class RegisterPaymentDto {
 }
 
 export enum PaymentMethod {
-  CASH = 'CASH'
+  CASH = 'CASH',
 }
 
 export enum PaymentStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
-  CANCELED = 'CANCELED'
+  CANCELED = 'CANCELED',
 }

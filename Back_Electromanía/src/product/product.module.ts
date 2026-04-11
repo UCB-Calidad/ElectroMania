@@ -12,11 +12,17 @@ import { CommonModule } from 'src/common/common.module';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    CommonModule, AuthModule
-  ],
+  imports: [CommonModule, AuthModule],
   controllers: [ProductController],
-  providers: [ProductService,PrismaService,AuthGuard,RolesGuard,ProductMapper,ProductImageMapper,PageProductMapper,RegisterProductUseCase
+  providers: [
+    ProductService,
+    PrismaService,
+    AuthGuard,
+    RolesGuard,
+    ProductMapper,
+    ProductImageMapper,
+    PageProductMapper,
+    RegisterProductUseCase,
   ],
   exports: [ProductService],
 })

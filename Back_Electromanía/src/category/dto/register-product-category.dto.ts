@@ -1,4 +1,4 @@
 export class RegisterProductCategoryDto {
-    productId: number;
-    categoryId: number;
+  productId: number;
+  categoryId: number;
 }

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoryService } from '../service/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
@@ -14,16 +23,20 @@ export class CategoryController {
 
   @Roles(UserRole.ADMIN)
   @UseGuards(RolesGuard, AuthGuard)
-  @Post("register")
+  @Post('register')
   register(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.register(createCategoryDto);
   }
 
   @Roles(UserRole.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  @Post("addProduct")
-  registerProductCategory(@Body() registerProductCategoryDto: RegisterProductCategoryDto) {
-    return this.categoryService.registerCategoryToProduct(registerProductCategoryDto);
+  @Post('addProduct')
+  registerProductCategory(
+    @Body() registerProductCategoryDto: RegisterProductCategoryDto,
+  ) {
+    return this.categoryService.registerCategoryToProduct(
+      registerProductCategoryDto,
+    );
   }
 
   @Get()
@@ -37,7 +50,10 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 

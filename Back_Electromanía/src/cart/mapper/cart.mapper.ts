@@ -32,41 +32,35 @@ export class CartMapper {
     const model = new CartResponseModel();
     model.id = entity.cart_id;
     model.userUUID = entity.user_uuid;
-    model.details = entity.cartDetails.map(detail =>
+    model.details = entity.cartDetails.map((detail) =>
       this.cartDetailsMapper.toModel(detail),
     );
-    model.total = model.details.reduce(
-      (sum, d) => sum + d.total,
-      0,
-    );
+    model.total = model.details.reduce((sum, d) => sum + d.total, 0);
     return model;
   }
   toOrderModel(entity: CartWithoutProductImages): CartResponseModel {
     const model = new CartResponseModel();
     model.id = entity.cart_id;
     model.userUUID = entity.user_uuid;
-    model.details = entity.cartDetails.map(detail =>
+    model.details = entity.cartDetails.map((detail) =>
       this.cartDetailsMapper.toModelWithoutProductImages(detail),
     );
-    model.total = model.details.reduce(
-      (sum, d) => sum + d.total,
-      0,
-    );
+    model.total = model.details.reduce((sum, d) => sum + d.total, 0);
     return model;
   }
 
-//   toEntity(
-//     dto: CreateCartRequestDto,
-//     userUUID: string,
-//   ): Prisma.CartCreateInput {
-//     return {
-//       user_uuid: userUUID,
-//       created_at: new Date(),
-//       cartDetails: {
-//         create: dto.details.map(detail =>
-//           this.cartDetailsMapper.toEntity(detail),
-//         ),
-//       },
-//     };
-//   }
+  //   toEntity(
+  //     dto: CreateCartRequestDto,
+  //     userUUID: string,
+  //   ): Prisma.CartCreateInput {
+  //     return {
+  //       user_uuid: userUUID,
+  //       created_at: new Date(),
+  //       cartDetails: {
+  //         create: dto.details.map(detail =>
+  //           this.cartDetailsMapper.toEntity(detail),
+  //         ),
+  //       },
+  //     };
+  //   }
 }
