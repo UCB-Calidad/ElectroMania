@@ -303,5 +303,12 @@ describe('OrderService', () => {
       expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.allOrders);
       expect(result).toEqual(mockOrderResponse)
     });
+    it("Deberia devolver null si no hay ordenes cacheadas", async ()=>{
+      vi.spyOn(cacheManagerMock, 'get').mockResolvedValue(null);
+      const result = await orderService['getAllCachedOrders']();
+      
+      expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.allOrders);
+      expect(result).toBeNull();
+    })
   })
 });
