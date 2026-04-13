@@ -333,4 +333,14 @@ describe('OrderService', () => {
       expect(result).toEqual(mockDbOrders as any);
     });
   });
+  describe("Mappear las ordenes obtenidas de la base de datos",()=>{
+    it("Deberia mappear las ordenes obtenidas de la base de datos", async ()=>{
+      orderMapperMock.toResponseModel.mockReturnValue(mockOrderResponse[0]);
+      const result = await orderService['mapOrdersToResponse'](mockDbOrders as any);
+      
+      expect(orderMapperMock.toResponseModel).toHaveBeenCalledTimes(mockDbOrders.length);
+      expect(orderMapperMock.toResponseModel).toHaveBeenCalledWith(mockDbOrders[0] as any);
+      expect(result).toEqual(mockOrderResponse);
+    });
+  });
 });
