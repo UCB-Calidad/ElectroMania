@@ -271,4 +271,28 @@ describe('OrderService', () => {
       expect(result).toEqual(mockDbOrders[0] as any)
     });
   });
+  describe("Guardar productos de la orden",()=>{
+    it("Deberia guardar los productos de la orden en la base de datos", async ()=>{
+      const orderId = 1;
+      const cartResponse: any = {
+        id: 1,
+        details: [
+          {
+            productId: 101,
+            quantity: 2
+          },
+          {
+            productId: 102,
+            quantity: 1
+          }
+        ]
+      };
+      const mockCreateOrderItems = vi.spyOn(orderService as any, 'createOrderItem').mockResolvedValue(undefined);
+      const result = await orderService.saveOrderItems(cartResponse, orderId, prismaMock);
+      
+      expect(mockCreateOrderItems).toHaveBeenCalledTimes(cartResponse.details.length);
+      expect(mockCreateOrderItems).toHaveBeenCalledWith(cartResponse.details[0], orderId, prismaMock);
+      expect(mockCreateOrderItems).toHaveBeenCalledWith(cartResponse.details[1], orderId, prismaMock);
+    });
+  });
 });
