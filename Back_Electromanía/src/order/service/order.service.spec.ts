@@ -166,7 +166,7 @@ describe('OrderService', () => {
   });
   describe("Obtener una orden para el recibo",()=>{
     const orderId: number = 3;
-    const orderIncludes: any = {
+    const orderIncludes = (orderId: number) => ({
       orderItems: true,
       payment: {
         where: { order_id: orderId },
@@ -178,10 +178,23 @@ describe('OrderService', () => {
           },
         },
       },
-    };
+    });
     it("Deberia obtener una exception debido a que la orden con el id no existe", async ()=>{
       prismaMock.order.findUnique.mockResolvedValue(null);
       await expect(orderService.getOrderForXML(orderId)).rejects.toThrow(new NotFoundException(`Order with ID ${orderId} not found`));
     });
+    it("Deberia obtener la orden de la base de datos y mapearla al modelo del recibo", async ()=>{
+      prismaMock.order.findUnique.mockResolvedValue(mockDbOrders[0] as any);
+      const mockPrismaOrderFindUnique = vi
+        .spyOn(prismaMock.order, 'findUnique');
+      orderMapperMock.toOrderReceiptModel.mockReturnValue({} as any);
+      const mockOrderMapper = vi.spyOn(orderMapperMock, 'toOrderReceiptModel');
+      await orderService.getOrderForXML(orderId);
+      expect(mockPrismaOrderFindUnique).toHaveBeenCalledExactlyOnceWith({
+        where: {  order_id: orderId },
+        include: orderIncludes(orderId)
+      });
+      expect(mockOrderMapper).toHaveBeenCalledExactlyOnceWith(mockDbOrders[0] as any)
+    })
   });
 });
