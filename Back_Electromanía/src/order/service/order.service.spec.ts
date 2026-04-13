@@ -310,5 +310,17 @@ describe('OrderService', () => {
       expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.allOrders);
       expect(result).toBeNull();
     })
-  })
+  });
+  describe("Guardar en cache una orden por su id",()=>{
+    const CACHE_TTL = 8000;
+    it("Deberia guardar en cache una orden por su id", async ()=>{
+      vi.spyOn(cacheManagerMock, 'set').mockResolvedValue(undefined);
+      const orderId = 1;
+      const orderResponse = mockOrderResponse[0];
+      await orderService['cacheOrderById'](orderId, orderResponse);
+      
+      expect(cacheManagerMock.set).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.orderByID(orderId), orderResponse, CACHE_TTL);
+
+    });
+  });
 });
