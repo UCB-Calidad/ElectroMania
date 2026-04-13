@@ -101,4 +101,20 @@ describe('OrderService', () => {
       expect(result).toEqual(mockOrderResponse[0])
     });
   });
+  describe("Obtener las ordenes por usuario",()=>{
+    const userUUID:string = "123e4567-e89b-12d3-a456-426614174000";
+    it("Deberia obtener las ordenes de un usuario, las cuales no estan en cache", async ()=>{
+      const getCachedSpy = vi.spyOn(orderService as any, 'getCachedOrdersByUser').mockResolvedValue(null);
+      const fetchSpy = vi.spyOn(orderService as any, 'fetchOrdersByUser').mockResolvedValue(mockDbOrders);
+      const mapSpy = vi.spyOn(orderService as any, 'mapOrdersToResponse').mockReturnValue(mockOrderResponse);
+      const cacheSpy = vi.spyOn(orderService as any, 'cacheOrdersByUser').mockResolvedValue(undefined);
+
+      const result = await orderService.getByUser(userUUID);
+      expect(getCachedSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledExactlyOnceWith(userUUID)
+      expect(mapSpy).toHaveBeenCalledTimes(1);
+      expect(cacheSpy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockOrderResponse)
+    });
+  });
 });
