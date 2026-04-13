@@ -320,7 +320,17 @@ describe('OrderService', () => {
       await orderService['cacheOrderById'](orderId, orderResponse);
       
       expect(cacheManagerMock.set).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.orderByID(orderId), orderResponse, CACHE_TTL);
-
+    });
+  });
+  describe("Obtener las ordenes sin mappear de la base de datos",()=>{
+    it("Deberia obtener las ordenes sin mappear de la base de datos", async ()=>{
+      prismaMock.order.findMany.mockResolvedValue(mockDbOrders as any);
+      const result = await orderService['fetchAllOrders']();
+      
+      expect(prismaMock.order.findMany).toHaveBeenCalledExactlyOnceWith({
+        include: orderService['getOrderIncludes'](),
+      });
+      expect(result).toEqual(mockDbOrders as any);
     });
   });
 });
