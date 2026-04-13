@@ -252,5 +252,23 @@ describe('OrderService', () => {
       expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.orderByID(orderId));
       expect(result).toBeNull();
     });
-  })
+  });
+  describe("Insertar una orden en la base de datos",()=>{
+    it("Deberia insertar una orden en la base de datos",async ()=>{
+      prismaMock.order.create.mockResolvedValue(mockDbOrders[0] as any);
+      const createOrderDto: any = {
+        user_uuid: "123e4567-e89b-12d3-a456-426614174000",
+        cart: {
+          id: 1,
+          total: 1000,
+        },
+      };
+      const result = await orderService['insertOrder'](createOrderDto, prismaMock);
+      expect(prismaMock.order.create).toHaveBeenCalledExactlyOnceWith({
+        data: createOrderDto,
+        include: orderService['getOrderIncludes'](),
+      });
+      expect(result).toEqual(mockDbOrders[0] as any)
+    });
+  });
 });
