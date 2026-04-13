@@ -85,5 +85,20 @@ describe('OrderService', () => {
       expect(cacheSpy).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockOrderResponse[0])
     });
+    it("Deberia devolver una orden por id ya que esta en cache",async ()=>{
+      const getCachedSpy = vi.spyOn(orderService as any, 'getCahedOrderById').mockResolvedValue(mockOrderResponse[0]);
+      const fetchSpy = vi.spyOn(orderService as any, 'findOrderById').mockResolvedValue(mockDbOrders[0]);
+      const cacheSpy = vi.spyOn(orderService as any, 'cacheOrderById').mockResolvedValue(undefined);
+
+      orderMapperMock.toResponseModel.mockReturnValue(mockOrderResponse[0]);
+
+      const result = await orderService.getById(1);
+
+      expect(getCachedSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(0);
+      expect(orderMapperMock.toResponseModel).toHaveBeenCalledTimes(0);
+      expect(cacheSpy).toHaveBeenCalledTimes(0);
+      expect(result).toEqual(mockOrderResponse[0])
+    });
   });
 });
