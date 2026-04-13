@@ -197,4 +197,33 @@ describe('OrderService', () => {
       expect(mockOrderMapper).toHaveBeenCalledExactlyOnceWith(mockDbOrders[0] as any)
     })
   });
+  describe("registrar una orden",()=>{
+    it("Deberia crear una orden y mapearla al modelo de respuesta", async ()=>{
+      const userUUID = "123e4567-e89b-12d3-a456-426614174000";
+      const cart: any = {
+        userUUID: userUUID,
+        total: 1000,
+        id: 1,
+      };
+      const mockRequestDto: any ={
+        user_uuid: userUUID,
+        cart: cart,
+      }
+      prismaMock.order.create.mockResolvedValue(mockDbOrders[0] as any);
+      const mockInsertOrder = vi.spyOn(orderService as any, 'insertOrder').mockResolvedValue({} as any);
+      orderMapperMock.toRegisterEntity.mockReturnValue({} as any);
+      const mockOrderMapper = vi.spyOn(orderMapperMock, 'toRegisterEntity');
+      orderMapperMock.toResponseModel.mockReturnValue(mockOrderResponse[0]);
+      const mockToResponseModel = vi.spyOn(orderMapperMock, 'toResponseModel');
+      const result = await orderService.register(userUUID, cart);
+
+
+      expect(mockOrderMapper).toHaveBeenCalledTimes(1);
+      expect(mockOrderMapper).toHaveBeenCalledExactlyOnceWith(mockRequestDto);
+      expect(mockInsertOrder).toHaveBeenCalledTimes(1);
+      expect(mockToResponseModel).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockOrderResponse[0])
+
+    });
+  })
 });
