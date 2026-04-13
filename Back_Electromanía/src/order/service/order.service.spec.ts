@@ -133,11 +133,35 @@ describe('OrderService', () => {
   });
   describe("Obtener las ordenes de la base de datos por el id",()=>{
     const orderId: number = 3;
+    const orderIncludes: any = {
+      userOrders: {
+        include: { user: true },
+      },
+      cart: {
+        include: {
+          cartDetails: {
+            include: { product: true },
+          },
+        },
+      },
+    }
     it("Deberia obtener una exception debido a que la orden con el id no existe", async ()=>{
       prismaMock.order.findUnique.mockResolvedValue(null);
       vi.spyOn(orderService as any, 'getCahedOrderById').mockResolvedValue(null);
 
       await expect(orderService.getById(orderId)).rejects.toThrow(new NotFoundException(`Order with ID ${orderId} not found`));
+    });
+    it("Deberia obtener la orden de la base de datos", async ()=>{
+      prismaMock.order.findUnique.mockResolvedValue(mockDbOrders[0] as any);
+      const mockPrismaOrderFindUnique = vi.spyOn(prismaMock.order, 'findUnique').mockResolvedValue(mockDbOrders[0] as any);
+      vi.spyOn(orderService as any, 'getCahedOrderById').mockResolvedValue(null);
+
+      await orderService.getById(orderId);
+      
+      expect(mockPrismaOrderFindUnique).toHaveBeenCalledExactlyOnceWith({
+        where: {  order_id: orderId },
+        include: orderIncludes
+      })
     });
   });
 });
