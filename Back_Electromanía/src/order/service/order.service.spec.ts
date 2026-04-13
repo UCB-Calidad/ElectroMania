@@ -6,6 +6,7 @@ import { prismaMock } from '../../../test-utils/prisma-mock';
 import { OrderResponseModel } from '../models/order-response.model';
 import { DeepMockProxy, mockDeep } from 'vitest-mock-extended';
 import { OrderMapper } from '../mapper/order.mapper';
+import { NotFoundException } from '@nestjs/common';
 describe('OrderService', () => {
   let orderService: OrderService;
   let orderMapperMock: DeepMockProxy<OrderMapper>;;
@@ -128,6 +129,15 @@ describe('OrderService', () => {
       expect(mapSpy).toHaveBeenCalledTimes(0);
       expect(cacheSpy).toHaveBeenCalledTimes(0);
       expect(result).toEqual(mockOrderResponse)
+    });
+  });
+  describe("Obtener las ordenes de la base de datos por el id",()=>{
+    const orderId: number = 3;
+    it("Deberia obtener una exception debido a que la orden con el id no existe", async ()=>{
+      prismaMock.order.findUnique.mockResolvedValue(null);
+      vi.spyOn(orderService as any, 'getCahedOrderById').mockResolvedValue(null);
+
+      await expect(orderService.getById(orderId)).rejects.toThrow(new NotFoundException(`Order with ID ${orderId} not found`));
     });
   });
 });
