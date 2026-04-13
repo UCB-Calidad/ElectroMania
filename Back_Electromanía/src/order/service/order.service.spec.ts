@@ -295,4 +295,13 @@ describe('OrderService', () => {
       expect(mockCreateOrderItems).toHaveBeenCalledWith(cartResponse.details[1], orderId, prismaMock);
     });
   });
+  describe("Obtener todas las ordenes que estan en cache",()=>{
+    it("Deberia obtener todas las ordenes que estan en cache", async ()=>{
+      vi.spyOn(cacheManagerMock, 'get').mockResolvedValue(mockOrderResponse);
+      const result = await orderService['getAllCachedOrders']();
+
+      expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.allOrders);
+      expect(result).toEqual(mockOrderResponse)
+    });
+  })
 });
