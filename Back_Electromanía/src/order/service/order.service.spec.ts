@@ -4,9 +4,11 @@ import { OrderService } from './order.service';
 import { PrismaService } from '../../prisma/service/prisma.service';
 import { prismaMock } from '../../../test-utils/prisma-mock';
 import { OrderResponseModel } from '../models/order-response.model';
-import { mockDeep } from 'vitest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'vitest-mock-extended';
+import { OrderMapper } from '../mapper/order.mapper';
 describe('OrderService', () => {
   let orderService: OrderService;
+  let orderMapperMock: DeepMockProxy<OrderMapper>;;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [OrderService,],
@@ -21,6 +23,7 @@ describe('OrderService', () => {
       return mockDeep(token);
     }).compile();
     orderService = module.get<OrderService>(OrderService);
+    orderMapperMock = module.get(OrderMapper);
     vi.clearAllMocks();
   });
   const mockOrderResponse: OrderResponseModel[] = [
@@ -64,5 +67,23 @@ describe('OrderService', () => {
       expect(cacheSpy).toHaveBeenCalledTimes(0);
       expect(result).toEqual(mockOrderResponse)
     });
-  })
+  });
+  describe("Obtener una orden por id", () =>{
+    it("Deberia devolver una orden por id ya que no esta en cache",async ()=>{
+      const getCachedSpy = vi.spyOn(orderService as any, 'getCahedOrderById').mockResolvedValue(null);
+      const fetchSpy = vi.spyOn(orderService as any, 'findOrderById').mockResolvedValue(mockDbOrders[0]);
+      const cacheSpy = vi.spyOn(orderService as any, 'cacheOrderById').mockResolvedValue(undefined);
+
+      orderMapperMock.toResponseModel.mockReturnValue(mockOrderResponse[0]);
+
+      const result = await orderService.getById(1);
+
+      expect(getCachedSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledExactlyOnceWith(1)
+      expect(orderMapperMock.toResponseModel).toHaveBeenCalledTimes(1);
+      expect(cacheSpy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockOrderResponse[0])
+    });
+  });
 });
