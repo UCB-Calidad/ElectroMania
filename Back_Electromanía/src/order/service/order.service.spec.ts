@@ -215,6 +215,9 @@ describe('OrderService', () => {
       const mockOrderMapper = vi.spyOn(orderMapperMock, 'toRegisterEntity');
       orderMapperMock.toResponseModel.mockReturnValue(mockOrderResponse[0]);
       const mockToResponseModel = vi.spyOn(orderMapperMock, 'toResponseModel');
+      const mockUpdateCache = vi.spyOn(orderService as any, "updateCacheAfterCreate").mockResolvedValue(undefined);
+
+
       const result = await orderService.register(userUUID, cart);
 
 
@@ -222,6 +225,7 @@ describe('OrderService', () => {
       expect(mockOrderMapper).toHaveBeenCalledExactlyOnceWith(mockRequestDto);
       expect(mockInsertOrder).toHaveBeenCalledTimes(1);
       expect(mockToResponseModel).toHaveBeenCalledTimes(1);
+      expect(mockUpdateCache).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockOrderResponse[0])
 
     });
