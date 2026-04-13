@@ -7,9 +7,13 @@ import { OrderResponseModel } from '../models/order-response.model';
 import { DeepMockProxy, mockDeep } from 'vitest-mock-extended';
 import { OrderMapper } from '../mapper/order.mapper';
 import { NotFoundException } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheOrderKeys } from '../cache/cache-orders.keys';
 describe('OrderService', () => {
   let orderService: OrderService;
-  let orderMapperMock: DeepMockProxy<OrderMapper>;;
+  let orderMapperMock: DeepMockProxy<OrderMapper>;
+  let cacheManagerMock:Cache;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [OrderService,],
@@ -25,6 +29,7 @@ describe('OrderService', () => {
     }).compile();
     orderService = module.get<OrderService>(OrderService);
     orderMapperMock = module.get(OrderMapper);
+    cacheManagerMock = module.get<Cache>(CACHE_MANAGER);
     vi.clearAllMocks();
   });
   const mockOrderResponse: OrderResponseModel[] = [
@@ -227,7 +232,25 @@ describe('OrderService', () => {
       expect(mockToResponseModel).toHaveBeenCalledTimes(1);
       expect(mockUpdateCache).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockOrderResponse[0])
+    });
+  });
+  describe("Obtener Ordenes Cacheadas por Id",()=>{
+    it("Deberia obtener la orden de la cache con el id",async ()=>{
+      const orderId = 1;
+      vi.spyOn(cacheManagerMock, 'get').mockResolvedValue(mockOrderResponse[0]);
 
+      const result = await orderService.getById(orderId);
+
+      expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.orderByID(orderId));
+      expect(result).toEqual(mockOrderResponse[0])
+    });
+    it("Deberia devolver null si no hay una orden cacheada con el id",async ()=>{
+      const orderId = 1;
+      vi.spyOn(cacheManagerMock, 'get').mockResolvedValue(null);
+      const result = await orderService['getCahedOrderById'](orderId);
+
+      expect(cacheManagerMock.get).toHaveBeenCalledExactlyOnceWith(CacheOrderKeys.orderByID(orderId));
+      expect(result).toBeNull();
     });
   })
 });
