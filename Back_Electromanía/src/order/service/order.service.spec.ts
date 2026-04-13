@@ -164,4 +164,24 @@ describe('OrderService', () => {
       })
     });
   });
+  describe("Obtener una orden para el recibo",()=>{
+    const orderId: number = 3;
+    const orderIncludes: any = {
+      orderItems: true,
+      payment: {
+        where: { order_id: orderId },
+      },
+      cart: {
+        include: {
+          user: {
+            omit: { password: true },
+          },
+        },
+      },
+    };
+    it("Deberia obtener una exception debido a que la orden con el id no existe", async ()=>{
+      prismaMock.order.findUnique.mockResolvedValue(null);
+      await expect(orderService.getOrderForXML(orderId)).rejects.toThrow(new NotFoundException(`Order with ID ${orderId} not found`));
+    });
+  });
 });
