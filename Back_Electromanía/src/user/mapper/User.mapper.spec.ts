@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import { UserMapper } from "./User.mapper";
-import { User, UserState } from "@prisma/client";
+import { Prisma, User, UserState } from "@prisma/client";
 import { UserModel } from "../models/User.model";
 import { UserJwtPayloadModel } from "../../auth/models/user-jwt-payload.model";
 
@@ -69,5 +69,38 @@ describe("UserMapper",()=>{
             expect(userEntity.phone_number).toBe(userModel.phone)
             expectTypeOf(userEntity).toEqualTypeOf<Prisma.UserCreateInput>()
         })
-    })
+    });
+    describe("Mappear a un modelo de registro",()=>{
+        it("Deberia Mappear una solicitud de crear un usuario admin ",()=>{
+            const userEntity = userMapper.toRegisterAdminUserEntity(userModel)
+            expect(userEntity).toBeDefined()
+            expect(userEntity.name).toBe(userModel.name)
+            expect(userEntity.email).toBe(userModel.email)
+            expect(userEntity.nit_ci).toBe(userModel.nit_ci)
+            expect(userEntity.social_reason).toBe(userModel.social_reason)
+            expect(userEntity.phone_number).toBe(userModel.phone)
+            expect(userEntity.role).toBe("ADMIN")
+            expectTypeOf(userEntity).toEqualTypeOf<Prisma.UserCreateInput>()
+        })
+        it("Deberia Mappear una solicitud de crear un usuario empleado ",()=>{
+            const userEntity = userMapper.toRegisterEmployedUserEntity(userModel)
+            expect(userEntity).toBeDefined()
+            expect(userEntity.name).toBe(userModel.name)
+            expect(userEntity.email).toBe(userModel.email)
+            expect(userEntity.nit_ci).toBe(userModel.nit_ci)
+            expect(userEntity.social_reason).toBe(userModel.social_reason)
+            expect(userEntity.phone_number).toBe(userModel.phone)
+            expect(userEntity.role).toBe("EMPLOYED")
+            expectTypeOf(userEntity).toEqualTypeOf<Prisma.UserCreateInput>()
+        });
+        it("Deberia mapear una entidad a un modelo de registro",()=>{
+            const userModel = userMapper.toRegisterUserModel(userEntity)
+            expect(userModel).toBeDefined()
+            expect(userModel.name).toBe(userEntity.name)
+            expect(userModel.email).toBe(userEntity.email)
+            expect(userModel.nit_ci).toBe(userEntity.nit_ci)
+            expect(userModel.social_reason).toBe(userEntity.social_reason)
+            expectTypeOf(userModel).toEqualTypeOf<UserRegisterResponseModel>()
+        });
+    });
 })
