@@ -19,4 +19,11 @@ describe("CryptoService",()=>{
             expect(token).toHaveLength(numberOfBytes*2);
         });
     });
+    describe("Generar un Codigo Numerico de n dijitos",()=>{
+        it("Deberia Generar un codigo numerico de 6 digitos",()=>{
+            const code = cryptoService.generateNumericCode(6);
+            expect(code).toBeGreaterThanOrEqual(100000);
+            expect(code).toBeLessThanOrEqual(999999);
+        })
+    })
 });
