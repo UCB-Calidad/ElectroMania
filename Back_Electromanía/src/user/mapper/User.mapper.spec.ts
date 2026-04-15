@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import { UserMapper } from "./User.mapper";
 import { User, UserState } from "@prisma/client";
 import { UserModel } from "../models/User.model";
+import { UserJwtPayloadModel } from "../../auth/models/user-jwt-payload.model";
 
 describe("UserMapper",()=>{
     let userMapper;
@@ -36,6 +37,16 @@ describe("UserMapper",()=>{
             expect(userModel.social_reason).toBe(userEntity.social_reason)
             expect(userModel.role).toBe(userEntity.role)
             expectTypeOf(userModel).toEqualTypeOf<UserModel>()
-        })
+        });
+    })
+    describe("Mapear a un modelo de JWT",()=>{
+        it("Deberia mapear una entidad a un modelo de JWT",()=>{
+            const jwtModel = userMapper.toJwtPayloadModel(userEntity)
+            expect(jwtModel).toBeDefined()
+            expect(jwtModel.uuid).toBe(userEntity.uuid)
+            expect(jwtModel.email).toBe(userEntity.email)
+            expect(jwtModel.role).toBe(userEntity.role)
+            expectTypeOf(jwtModel).toEqualTypeOf<UserJwtPayloadModel>()
+        });
     })
 })
