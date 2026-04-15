@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CryptoService } from "./crypto.service";
+import { isUUID } from "class-validator";
 
 
 describe("CryptoService",()=>{
@@ -25,5 +26,12 @@ describe("CryptoService",()=>{
             expect(code).toBeGreaterThanOrEqual(100000);
             expect(code).toBeLessThanOrEqual(999999);
         })
-    })
+    });;
+    describe("Generar un UUID",()=>{
+        it("Deberia Generar un UUID",()=>{
+            const uuid = cryptoService.generateRandomUUID();
+            expect(uuid).toHaveLength(36);
+            expect(isUUID(uuid)).toBeTruthy();
+        })
+    });
 });
