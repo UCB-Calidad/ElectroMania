@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import { CategoryMapper } from "./category.mapper";
 import { Category } from "@prisma/client";
 import { CategoryModel } from "../models/category.model";
+import { CreateCategoryDto } from "../dto/create-category.dto";
 
 
 describe("CategoryMapper", () => {
@@ -33,11 +34,15 @@ describe("CategoryMapper", () => {
     });
     describe("Mappeo a entidad",()=>{
         it("Deberia mapear un modelo a una entidad",()=>{
-            const categoryModel = categoryMapper.toModel(categoryEntity)
-            expect(categoryModel).toBeDefined()
-            expect(categoryModel.id).toBe(categoryEntity.category_id)
-            expect(categoryModel.name).toBe(categoryEntity.category_name)
-            expectTypeOf(categoryModel).toEqualTypeOf<CategoryModel>()
+            const createCategoryDto:CreateCategoryDto = {
+                name: "Electronics",
+                description: "Electronic devices and components"
+            }
+            const categoryEntityResponse = categoryMapper.toEntity(createCategoryDto);
+            expect(categoryEntityResponse).toBeDefined()
+            expect(categoryEntityResponse.category_name).toBe(createCategoryDto.name)
+            expect(categoryEntityResponse.description).toBe(createCategoryDto.description)
+            expectTypeOf(categoryEntityResponse).toEqualTypeOf<Category>()
         });
     });
     describe("",()=>{
