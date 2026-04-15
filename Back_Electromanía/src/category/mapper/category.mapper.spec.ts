@@ -17,7 +17,11 @@ describe("CategoryMapper", () => {
         category_id: 1,
         category_name: "Electronics",
         description: "Electronic devices and components"
-    }
+    };
+    const categoryModel: CategoryModel = {
+        id: 1,
+        name: "Electronics",
+    };
     describe("Mappeo a modelo interno",()=>{
         it("Deberia mapear una entidad a un modelo",()=>{
             const categoryModel = categoryMapper.toModel(categoryEntity)
@@ -26,5 +30,14 @@ describe("CategoryMapper", () => {
             expect(categoryModel.name).toBe(categoryEntity.category_name)
             expectTypeOf(categoryModel).toEqualTypeOf<CategoryModel>()
         });
-    })
+    });
+    describe("Mappeo a entidad",()=>{
+        it("Deberia mapear un modelo a una entidad",()=>{
+            const categoryModel = categoryMapper.toModel(categoryEntity)
+            expect(categoryModel).toBeDefined()
+            expect(categoryModel.id).toBe(categoryEntity.category_id)
+            expect(categoryModel.name).toBe(categoryEntity.category_name)
+            expectTypeOf(categoryModel).toEqualTypeOf<CategoryModel>()
+        });
+    });
 })
