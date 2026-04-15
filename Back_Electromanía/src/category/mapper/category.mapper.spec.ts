@@ -40,4 +40,11 @@ describe("CategoryMapper", () => {
             expectTypeOf(categoryModel).toEqualTypeOf<CategoryModel>()
         });
     });
+    describe("",()=>{
+        it("Deberia mapear a un update input",()=>{
+            const categoryUpdateInput = categoryMapper.toAddProduct({productId:1})
+            expect(categoryUpdateInput).toBeDefined()
+            expect(categoryUpdateInput.productCategories.create.product_id).toBe(1)
+        })
+    })
 })
