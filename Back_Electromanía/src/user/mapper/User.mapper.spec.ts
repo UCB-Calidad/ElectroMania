@@ -26,6 +26,15 @@ describe("UserMapper",()=>{
         created_at: new Date(),
         updated_at: new Date()
     }
+    const userModel: UserModel = {
+        uuid: "123456789",
+        name: "Juan",
+        email: "juan@gmail.com",
+        nit_ci: "123456789",
+        social_reason: "Juan S.A.",
+        role: "ADMIN",
+        phone: "123456789"
+    }
     describe("Mappear a un modelo interno",()=>{
         it("Deberia Mapear una Entidad a un Modelo de usuario",()=>{
             const userModel = userMapper.toModel(userEntity)
@@ -48,5 +57,17 @@ describe("UserMapper",()=>{
             expect(jwtModel.role).toBe(userEntity.role)
             expectTypeOf(jwtModel).toEqualTypeOf<UserJwtPayloadModel>()
         });
+    })
+    describe("Mapear a una entidad de registro",()=>{
+        it("Deberia mapear un modelo de registro a una entidad",()=>{
+            const userEntity = userMapper.toEntity(userModel);
+            expect(userEntity).toBeDefined()
+            expect(userEntity.name).toBe(userModel.name)
+            expect(userEntity.email).toBe(userModel.email)
+            expect(userEntity.nit_ci).toBe(userModel.nit_ci)
+            expect(userEntity.social_reason).toBe(userModel.social_reason)
+            expect(userEntity.phone_number).toBe(userModel.phone)
+            expectTypeOf(userEntity).toEqualTypeOf<Prisma.UserCreateInput>()
+        })
     })
 })
