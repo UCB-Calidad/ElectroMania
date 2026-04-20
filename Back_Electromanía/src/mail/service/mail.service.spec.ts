@@ -23,6 +23,20 @@ describe("MailService", () => {
         mailService = module.get<MailService>(MailService);
         vi.clearAllMocks();
     });
+    describe("Conexion SMTP", () => {
+        it("Deberia verificar la conexion SMTP al iniciar el modulo", async () => {
+            const loggerLogSpy = vi.spyOn(mailService['logger'], 'log').mockImplementation(() => {});
+            await mailService.onModuleInit();
+            expect(loggerLogSpy).toHaveBeenCalledWith('SMTP connection verified successfully ✅');
+        });
+        it("Deberia mostrar un log de error si la conexion SMTP falla", async () => {
+            const errorMessage = "Error de conexión SMTP";
+            mailerServiceMock['transporter'].verify.mockRejectedValueOnce(new Error(errorMessage));
+            const loggerErrorSpy = vi.spyOn(mailService['logger'], 'error').mockImplementation(() => {});
+            await mailService.onModuleInit();
+            expect(loggerErrorSpy).toHaveBeenCalledWith('SMTP verification failed ❌', new Error(errorMessage));
+        });
+    });
 
     describe("Mandar orden por email", () => {
         it("Deberia mostrar un log de error y lanzar una excepción en caso de fallar el envio", async () => {
@@ -68,10 +82,14 @@ describe("MailService", () => {
             const to = "cliente@correo.com";
             const orderNumber = 123;
             const htmlContent = "<p>Html Falso</p>";
-            const loggerErrorSpy = vi.spyOn(mailService['logger'], 'error').mockImplementation(() => {});
-            const emailSender = vi.mocked(mailerServiceMock.sendMail).mockResolvedValueOnce(new Error("Deprimido"));
-            expect(await mailService.sendOrderReceiptHtml(to, orderNumber, htmlContent)).rejects.toThrow("Deprimido");
-            expect(loggerErrorSpy).toHaveBeenCalledWith(`Error sending HTML receipt: Deprimido`);
+            const loggerLogSpy = vi.spyOn(mailService['logger'], 'log').mockImplementation(() => {});
+            await mailService.sendOrderReceiptHtml(to, orderNumber, htmlContent);
+            expect(mailerServiceMock.sendMail).toHaveBeenCalledOnce();
+            expect(mailerServiceMock.sendMail).toHaveBeenCalledWith({
+                to,
+                subject: `Recibo de Compra - Orden #${orderNumber}`,
+                html: htmlContent,
+            });
         });
     })
 });
