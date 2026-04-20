@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CartDetailsMapper } from './cartDetails.mapper';
 import { ProductState } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
+import e from "express";
 
 describe("CartDetailsMapper", () => {
     let cartDetailsMapper: CartDetailsMapper;
@@ -64,4 +65,15 @@ describe("CartDetailsMapper", () => {
             expect(result.total).toBe(200);
         });
     });
+    describe("Mapeo a item de orden",()=>{
+        it("Deberia mapear una entidad de detalle de carrito a un item de orden", () => {
+            const result = cartDetailsMapper.toOrderItem(cartDetailsMapper.toModel(cartDetailEntity as any));
+            expect(result).toBeDefined();
+            expect(result.product_name).toBe(cartDetailEntity.product.product_name);
+            expect(Number(result.unit_price)).toBe(Number(cartDetailEntity.product.price));
+            expect(result.product.connect?.product_id).toBe(cartDetailEntity.product.product_id);
+            expect(result.quantity).toBe(cartDetailEntity.quantity);
+            expect(result.total).toBe(cartDetailEntity.quantity * Number(cartDetailEntity.unit_price));
+        });
+    })
 });
