@@ -20,6 +20,8 @@ export default defineConfig({
         'src/**/*.spec.ts',
         'src/**/dto/**/*.dto.ts',
         'src/**/dto/*.dto.ts',
+        'src/**/*.module.ts',
+        'src/*.module.ts'
       ],
       all: true,
       reporter: ['text', 'json', 'html', "lcov"],

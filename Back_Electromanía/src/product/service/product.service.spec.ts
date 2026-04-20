@@ -5,13 +5,16 @@ import { ProductMapper } from '../mapper/Product.mapper';
 import { ProductImageMapper } from '../mapper/ProductImage.mapper';
 import { PageProductMapper } from '../mapper/PageProduct.mapper';
 import { CreateProductRequestModel } from '../model/CreateProductRequest.model';
+import { RegisterProductImageRequestModel } from '../model/RegisterProductImageRequest.model';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { vi } from 'vitest';
+import { RegisterProductCategoryDto } from '../../category/dto/register-product-category.dto';
 
 describe('ProductService (unit)', () => {
   let service: ProductService;
   let prismaMock: any;
+  let cacheManagerMock: any;
 
   const mockProductEntity = {
     product_id: 1,
@@ -40,7 +43,17 @@ describe('ProductService (unit)', () => {
         create: vi.fn().mockResolvedValue({}),
         deleteMany: vi.fn().mockResolvedValue({}),
       },
+      productCategory: {
+        findUnique: vi.fn().mockResolvedValue(null),
+        create: vi.fn().mockResolvedValue({}),
+      },
       $transaction: vi.fn().mockImplementation(async (fn) => fn(prismaMock)),
+    };
+
+    cacheManagerMock = {
+      get: vi.fn(),
+      set: vi.fn(),
+      del: vi.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -52,11 +65,7 @@ describe('ProductService (unit)', () => {
         { provide: PrismaService, useValue: prismaMock },
         {
           provide: CACHE_MANAGER,
-          useValue: {
-            get: vi.fn(),
-            set: vi.fn(),
-            del: vi.fn(),
-          },
+          useValue: cacheManagerMock,
         },
       ],
     }).compile();
@@ -176,5 +185,139 @@ describe('ProductService (unit)', () => {
   it('should throw NotFoundException if product not found for confirmSale', async () => {
     prismaMock.product.findUnique.mockResolvedValueOnce(null);
     await expect(service.confirmSale(1, 1)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should get paginated products', async () => {
+    const result = await service.getPageProduct(1);
+    expect(result).toBeDefined();
+    expect(result.page).toBe(1);
+  });
+
+  it('should register product image', async () => {
+    const dto: RegisterProductImageRequestModel = {
+      name: 'prueba',
+      image_url: 'http://example.com/image.jpg',
+    };
+    const result = await service.registerProductImage(dto);
+    expect(result).toBeDefined();
+  });
+
+  it('should throw NotFoundException when registering image for non-existent product', async () => {
+    prismaMock.product.findUnique.mockResolvedValueOnce(null);
+    const dto: RegisterProductImageRequestModel = {
+      name: 'nonexistent',
+      image_url: 'http://example.com/image.jpg',
+    };
+    await expect(service.registerProductImage(dto)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should get products by filter', async () => {
+    const filter = { product_name: { contains: 'prueba' } };
+    const result = await service.getFilterBy(filter);
+    expect(result).toHaveLength(1);
+  });
+
+  it('should throw NotFoundException when deleting non-existent product', async () => {
+    prismaMock.product.findUnique.mockResolvedValueOnce(null);
+    await expect(service.deleteProduct(999)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should throw NotFoundException when getting product by non-existent id', async () => {
+    prismaMock.product.findUnique.mockResolvedValueOnce(null);
+    await expect(service.getProductById(999)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should reserve stock', async () => {
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      stock_total: 20,
+      stock_reserved: 5,
+    });
+    await service.reserveStock(1, 5);
+    expect(prismaMock.product.update).toHaveBeenCalled();
+  });
+
+  it('should throw ForbiddenException when reserving insufficient stock', async () => {
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      stock_total: 5,
+      stock_reserved: 4,
+    });
+    await expect(service.reserveStock(1, 5)).rejects.toThrow(ForbiddenException);
+  });
+
+  it('should release reserved stock', async () => {
+    await service.releaseReservedStock(1, 5);
+    expect(prismaMock.product.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { product_id: 1 },
+        data: { stock_reserved: { decrement: 5 } },
+      }),
+    );
+  });
+
+  it('should recover reserved quantity', async () => {
+    await service.recoverReservedQuantity(1, 5);
+    expect(prismaMock.product.update).toHaveBeenCalled();
+  });
+
+  it('should throw ForbiddenException when adding invalid stock quantity', async () => {
+    await expect(service.addStock(1, 0)).rejects.toThrow(ForbiddenException);
+    await expect(service.addStock(1, -5)).rejects.toThrow(ForbiddenException);
+  });
+
+  it('should assign category to product', async () => {
+    prismaMock.productCategory.findUnique.mockResolvedValueOnce(null);
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      product_id: 1,
+      product_name: 'prueba',
+      description: 'prueba',
+      price: 100,
+      stock_total: 10,
+      stock_reserved: 0,
+      state: true,
+    });
+    const dto: RegisterProductCategoryDto = { productId: 1, categoryId: 1 };
+    const result = await service.assignCategory(dto);
+    expect(result).toBeDefined();
+  });
+
+  it('should assign category when relation already exists', async () => {
+    prismaMock.productCategory.findUnique.mockResolvedValueOnce({ product_id: 1, category_id: 1 });
+    prismaMock.product.findUnique.mockResolvedValueOnce({
+      product_id: 1,
+      product_name: 'prueba',
+      description: 'prueba',
+      price: 100,
+      stock_total: 10,
+      stock_reserved: 0,
+      state: true,
+    });
+    const dto: RegisterProductCategoryDto = { productId: 1, categoryId: 1 };
+    const result = await service.assignCategory(dto);
+    expect(result).toBeDefined();
+  });
+
+  it('should throw NotFoundException when assigning category to non-existent product', async () => {
+    prismaMock.productCategory.findUnique.mockResolvedValueOnce(null);
+    prismaMock.product.findUnique.mockResolvedValueOnce(null);
+    const dto: RegisterProductCategoryDto = { productId: 999, categoryId: 1 };
+    await expect(service.assignCategory(dto)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should throw ForbiddenException when releasing stock with invalid quantity', async () => {
+    await expect(service.releaseReservedStock(1, 0)).rejects.toThrow(ForbiddenException);
+  });
+
+  it('should use cache for getAllProducts', async () => {
+    cacheManagerMock.get = vi.fn().mockResolvedValue([mockProductEntity]);
+    await service.getAllProducts();
+    expect(cacheManagerMock.get).toHaveBeenCalled();
+  });
+
+  it('should cache products after fetching', async () => {
+    cacheManagerMock.get = vi.fn().mockResolvedValue(null);
+    cacheManagerMock.set = vi.fn().mockResolvedValue(true);
+    prismaMock.product.findMany.mockResolvedValueOnce([mockProductEntity]);
+    await service.getAllProducts();
+    expect(cacheManagerMock.set).toHaveBeenCalled();
   });
 });
