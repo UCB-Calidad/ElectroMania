@@ -13,12 +13,24 @@ import { vi } from 'vitest';
 
 describe('AuthController', () => {
   let controller: AuthController;
+  let mockAuthService: any;
+  let mockLoginUseCase: any;
 
   beforeEach(async () => {
+    mockAuthService = {
+      registerUser: vi.fn().mockResolvedValue({ uuid: "123", name: "Test" }),
+      registerAdminUser: vi.fn().mockResolvedValue({ uuid: "123", name: "Admin" }),
+      registerEmployeeUser: vi.fn().mockResolvedValue({ uuid: "123", name: "Employee" }),
+    };
+    mockLoginUseCase = {
+      execute: vi.fn().mockResolvedValue({ access_token: "token", user: { uuid: "123" } }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        AuthService,
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: LoginUseCase, useValue: mockLoginUseCase },
         UserMapper,
         UserService,
         JwtService,
@@ -33,7 +45,6 @@ describe('AuthController', () => {
             del: vi.fn(),
           },
         },
-        LoginUseCase,
       ],
     }).compile();
 
@@ -42,5 +53,28 @@ describe('AuthController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should register a user', async () => {
+    const result = await controller.registerUser({ name: "Test", email: "test@test.com", password: "password" } as any);
+    expect(result).toBeDefined();
+  });
+
+  it('should login a user', async () => {
+    const mockResponse = {
+      cookie: vi.fn(),
+    } as any;
+    const result = await controller.login({ email: "test@test.com", password: "password" } as any, mockResponse);
+    expect(result).toBeDefined();
+  });
+
+  it('should register an admin user', async () => {
+    const result = await controller.registerAdminUser({ name: "Admin", email: "admin@test.com", password: "password" } as any);
+    expect(result).toBeDefined();
+  });
+
+  it('should register an employee user', async () => {
+    const result = await controller.registerEmployeeUser({ name: "Employee", email: "employee@test.com", password: "password" } as any);
+    expect(result).toBeDefined();
   });
 });
