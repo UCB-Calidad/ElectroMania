@@ -48,19 +48,4 @@ export class CartMapper {
     model.total = model.details.reduce((sum, d) => sum + d.total, 0);
     return model;
   }
-
-  //   toEntity(
-  //     dto: CreateCartRequestDto,
-  //     userUUID: string,
-  //   ): Prisma.CartCreateInput {
-  //     return {
-  //       user_uuid: userUUID,
-  //       created_at: new Date(),
-  //       cartDetails: {
-  //         create: dto.details.map(detail =>
-  //           this.cartDetailsMapper.toEntity(detail),
-  //         ),
-  //       },
-  //     };
-  //   }
 }
